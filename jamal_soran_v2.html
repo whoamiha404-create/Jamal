@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>کۆگای احمد</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f7f4ef;--bg2:#eeebe4;--sur:#ffffff;--sur2:#f9f7f3;--sur3:#f2efe9;
+  --ink:#1a1814;--ink2:#5c5648;--ink3:#9c9282;
+  --gold:#b8860b;--gold-lt:#fdf6e3;--gold-bd:#e8d080;
+  --grn:#1a6640;--grn-lt:#eaf4ee;--grn-bd:#8ecbaa;
+  --red:#9e2828;--red-lt:#fdf0f0;--red-bd:#e8a8a8;
+  --bdr:#ddd8cc;--bdr2:#c8c2b4;
+  --sh:0 1px 2px rgba(0,0,0,.05),0 3px 10px rgba(0,0,0,.06);
+  --sh2:0 4px 16px rgba(0,0,0,.1),0 1px 3px rgba(0,0,0,.06);
+  --r:8px;--r2:5px;
+}
+[data-dark]{
+  --bg:#141210;--bg2:#1c1917;--sur:#201d19;--sur2:#282420;--sur3:#302c27;
+  --ink:#f0ece2;--ink2:#a89880;--ink3:#6b6050;
+  --gold:#d4a020;--gold-lt:#2a2008;--gold-bd:#6b5010;
+  --grn:#28a060;--grn-lt:#0e2418;--grn-bd:#1e5838;
+  --red:#c84040;--red-lt:#280e0e;--red-bd:#601818;
+  --bdr:#302c27;--bdr2:#403c34;
+  --sh:0 1px 2px rgba(0,0,0,.3),0 3px 10px rgba(0,0,0,.25);
+  --sh2:0 4px 16px rgba(0,0,0,.4),0 1px 3px rgba(0,0,0,.3);
+}
+body{font-family:'Noto Kufi Arabic',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;direction:rtl;transition:background .2s,color .2s;line-height:1.5}
+
+/* LOGIN */
+#ls{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
+#ls::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,var(--bdr) 1px,transparent 1px);background-size:28px 28px;opacity:.5;pointer-events:none}
+.lc{background:var(--sur);border:1px solid var(--bdr2);border-radius:14px;padding:40px 36px;width:370px;position:relative;z-index:1;box-shadow:var(--sh2)}
+.lico{width:56px;height:56px;border-radius:12px;background:var(--gold-lt);border:1.5px solid var(--gold-bd);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 16px}
+.lbrand{text-align:center;margin-bottom:28px}
+.lbrand h1{font-size:18px;font-weight:800;color:var(--ink);letter-spacing:-.2px}
+.lbrand p{font-size:12px;color:var(--ink3);margin-top:3px}
+.lbl{display:block;font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:5px;letter-spacing:.3px}
+.inp{width:100%;background:var(--sur2);border:1px solid var(--bdr);border-radius:var(--r2);padding:9px 12px;color:var(--ink);font-size:13px;font-family:inherit;outline:none;transition:border .15s;margin-bottom:13px}
+.inp:focus{border-color:var(--gold)}
+.lbtn{width:100%;background:var(--ink);color:var(--bg);border:none;border-radius:var(--r2);padding:11px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:4px;transition:opacity .15s}
+.lbtn:hover{opacity:.8}
+.lerr{color:var(--red);font-size:12px;margin-top:8px;display:none}
+.lhint{margin-top:18px;padding-top:14px;border-top:1px solid var(--bdr);font-size:11px;color:var(--ink3);line-height:1.9}
+
+/* APP */
+#app{display:none;flex-direction:column;min-height:100vh}
+.bar{height:50px;background:var(--sur);border-bottom:1px solid var(--bdr);display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:200}
+.bar-l{display:flex;align-items:center;gap:9px}
+.bar-ico{width:30px;height:30px;border-radius:7px;background:var(--gold-lt);border:1px solid var(--gold-bd);display:flex;align-items:center;justify-content:center;font-size:15px}
+.bar-name{font-size:14px;font-weight:700;color:var(--ink)}
+.bar-r{display:flex;align-items:center;gap:7px}
+.tbtn{width:30px;height:30px;border-radius:6px;background:var(--sur2);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px}
+.tbtn:hover{background:var(--sur3)}
+.upill{display:flex;align-items:center;gap:6px;background:var(--sur2);border:1px solid var(--bdr);border-radius:20px;padding:3px 11px 3px 5px}
+.uav{width:20px;height:20px;border-radius:50%;background:var(--gold-lt);border:1px solid var(--gold-bd);display:flex;align-items:center;justify-content:center;font-size:10px}
+.uname{font-size:12px;color:var(--ink2)}
+.obtn{background:transparent;border:1px solid var(--bdr);border-radius:var(--r2);padding:4px 10px;font-size:12px;font-family:inherit;color:var(--ink2);cursor:pointer;transition:all .15s}
+.obtn:hover{border-color:var(--red-bd);color:var(--red)}
+
+/* SHELL */
+.shell{display:flex;flex:1}
+.sb{width:188px;background:var(--sur);border-left:1px solid var(--bdr);padding:10px 0;flex-shrink:0;position:sticky;top:50px;height:calc(100vh - 50px);overflow-y:auto}
+.ng{font-size:10px;font-weight:700;color:var(--ink3);padding:10px 14px 3px;letter-spacing:.7px;text-transform:uppercase}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:13px;color:var(--ink2);border-right:2px solid transparent;transition:all .12s;user-select:none}
+.ni:hover{background:var(--sur2);color:var(--ink)}
+.ni.on{background:var(--gold-lt);color:var(--gold);border-right-color:var(--gold);font-weight:600}
+.nico{font-size:14px;width:17px;text-align:center;flex-shrink:0}
+
+/* CONTENT */
+.ct{flex:1;padding:22px;overflow-y:auto;background:var(--bg)}
+.pg{display:none}
+.pg.on{display:block}
+
+/* PAGE HEAD */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+.ph-h{font-size:17px;font-weight:800;color:var(--ink);letter-spacing:-.3px}
+.ph-s{font-size:12px;color:var(--ink3);margin-top:2px}
+
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:20px}
+.sc{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);padding:16px;box-shadow:var(--sh);border-top:3px solid var(--gold)}
+.sc-i{font-size:20px;margin-bottom:8px}
+.sc-v{font-size:20px;font-weight:900;color:var(--ink);letter-spacing:-.4px}
+.sc-l{font-size:11px;color:var(--ink3);margin-top:4px;font-weight:500}
+
+/* 2 COL */
+.gc2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+/* SECTION */
+.sec{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.sch{padding:11px 15px;border-bottom:1px solid var(--bdr);background:var(--sur2);display:flex;align-items:center;justify-content:space-between}
+.sch-t{font-size:13px;font-weight:600;color:var(--ink)}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--sur2);padding:8px 13px;font-size:11px;font-weight:600;color:var(--ink3);text-align:right;border-bottom:1px solid var(--bdr);letter-spacing:.2px}
+tbody td{padding:9px 13px;font-size:13px;border-bottom:1px solid var(--bdr);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--sur2)}
+
+/* BADGE */
+.bd{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.bg{background:var(--gold-lt);color:var(--gold);border:1px solid var(--gold-bd)}
+.bv{background:var(--grn-lt);color:var(--grn);border:1px solid var(--grn-bd)}
+.br{background:var(--red-lt);color:var(--red);border:1px solid var(--red-bd)}
+.bn{background:var(--sur3);color:var(--ink2);border:1px solid var(--bdr)}
+
+/* BTN */
+.btn{display:inline-flex;align-items:center;gap:5px;border:none;border-radius:var(--r2);padding:7px 13px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .12s;white-space:nowrap}
+.bsolid{background:var(--ink);color:var(--bg)}
+.bsolid:hover{opacity:.8}
+.bgold{background:var(--gold-lt);color:var(--gold);border:1px solid var(--gold-bd)}
+.bgold:hover{background:var(--gold-bd)}
+.bgh{background:transparent;border:1px solid var(--bdr);color:var(--ink2)}
+.bgh:hover{border-color:var(--bdr2);color:var(--ink);background:var(--sur2)}
+.bred{background:var(--red-lt);color:var(--red);border:1px solid var(--red-bd)}
+.bred:hover{background:var(--red-bd)}
+.bgrn{background:var(--grn-lt);color:var(--grn);border:1px solid var(--grn-bd)}
+.bgrn:hover{background:var(--grn-bd)}
+.bxs{padding:3px 8px;font-size:11px}
+.bsm{padding:5px 10px;font-size:12px}
+
+/* FORM */
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.fg3{grid-template-columns:1fr 1fr 1fr}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:11px;font-weight:600;color:var(--ink2);letter-spacing:.2px}
+.fg input,.fg select{background:var(--sur2);border:1px solid var(--bdr);border-radius:var(--r2);padding:8px 11px;color:var(--ink);font-size:13px;font-family:inherit;outline:none;direction:rtl;transition:border .15s}
+.fg input:focus,.fg select:focus{border-color:var(--gold)}
+.fg select option{background:var(--sur)}
+
+/* PANEL */
+.pnl{background:var(--sur);border:1px solid var(--bdr);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.pnl-t{font-size:11px;font-weight:700;color:var(--ink3);margin-bottom:13px;padding-bottom:9px;border-bottom:1px solid var(--bdr);text-transform:uppercase;letter-spacing:.5px}
+
+/* RECEIPT LAYOUT */
+.rl{display:grid;grid-template-columns:1fr 355px;gap:16px;align-items:start}
+
+/* RECEIPT ITEMS */
+.rit{width:100%;border-collapse:collapse}
+.rit th{background:var(--sur3);padding:7px 7px;font-size:11px;font-weight:600;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:right}
+.rit td{padding:3px 3px;border-bottom:1px solid var(--bdr)}
+.rit tr:last-child td{border:none}
+.rit input{width:100%;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:5px 7px;color:var(--ink);font-size:12px;font-family:inherit;outline:none;direction:rtl}
+.rit input:focus{border-color:var(--gold)}
+
+/* RECEIPT PREVIEW */
+.rpv{background:#fff;color:#111;border:1px solid #bbb;border-radius:var(--r);padding:13px;font-family:'Noto Kufi Arabic',sans-serif;direction:rtl;font-size:11px;box-shadow:0 6px 20px rgba(0,0,0,.14)}
+.rph{display:flex;justify-content:space-between;align-items:flex-start;border:1.5px solid #111;padding:6px}
+.rpc{text-align:center;flex:1;padding:0 6px}
+.rpct{font-size:10.5px;font-weight:900;color:#1a4fa0;line-height:1.35}
+.rpcs{font-size:9px;color:#444;margin-top:2px}
+.rpph{font-size:10px;text-align:right;min-width:105px}
+.rppc{color:#1a4fa0;font-weight:800;font-size:12px}
+.rpm{display:flex;justify-content:space-between;flex-wrap:wrap;gap:3px;border:1.5px solid #111;border-top:none;padding:4px 6px;font-size:10px;background:#fafafa}
+.rpt{width:100%;border-collapse:collapse;border:1.5px solid #111;border-top:none}
+.rpt th{background:#f5c800;padding:4px;font-size:10px;font-weight:700;border:.5px solid #aaa;text-align:center}
+.rpt td{border:.5px solid #ccc;padding:3px 4px;font-size:10px;text-align:center}
+.rptot{background:#f5c800;font-weight:800}
+.rpf{display:flex;justify-content:space-between;border:1.5px solid #111;border-top:none;padding:4px 7px;font-size:9.5px;background:#fffde6}
+
+/* MODAL */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.ov.on{display:flex}
+.md{background:var(--sur);border:1px solid var(--bdr2);border-radius:13px;padding:24px;width:450px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:var(--sh2)}
+.md-t{font-size:15px;font-weight:700;margin-bottom:17px;color:var(--ink)}
+.md-f{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--bdr)}
+
+/* TOAST */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--sur);border:1px solid var(--bdr2);border-radius:var(--r);padding:10px 20px;font-size:13px;z-index:9999;display:none;box-shadow:var(--sh2)}
+.toast.on{display:flex;align-items:center;gap:7px}
+.toast.ok{border-color:var(--grn-bd);color:var(--grn)}
+.toast.er{border-color:var(--red-bd);color:var(--red)}
+
+/* SEARCH */
+.srch{background:var(--sur2);border:1px solid var(--bdr);border-radius:var(--r2);padding:7px 11px;color:var(--ink);font-size:13px;font-family:inherit;outline:none;width:195px;direction:rtl}
+.srch:focus{border-color:var(--gold)}
+
+/* REPORT BARS */
+.rb{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.rbl{font-size:12px;color:var(--ink2);width:125px;flex-shrink:0;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rbt{flex:1;background:var(--sur3);border-radius:3px;height:7px;overflow:hidden}
+.rbf{height:100%;background:var(--gold);border-radius:3px;transition:width .35s}
+.rbv{font-size:11px;color:var(--ink3);width:65px;text-align:left;flex-shrink:0}
+
+/* UTILS */
+.es{text-align:center;padding:28px;color:var(--ink3);font-size:13px}
+.low{color:var(--red);font-weight:700}
+
+@media print{
+  .bar,.sb,.no-print,.pnl{display:none!important}
+  .ct{padding:0}
+  #pg-receipt{display:block!important}
+  .rl{grid-template-columns:1fr!important;display:block}
+  .rpv{border:none;box-shadow:none;padding:0}
+  body{background:#fff}
+}
+@media(max-width:900px){
+  .sb{width:46px}
+  .ni .nlbl,.ng{display:none}
+  .sg{grid-template-columns:1fr 1fr}
+  .gc2,.rl,.fg2,.fg3{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="ls">
+  <div class="lc">
+    <div class="lico">🏠</div>
+    <div class="lbrand">
+      <h1>کۆگای احمد</h1>
+      <p>سیستەمی فرۆشتن و بەڕێوەبردنی کۆگا</p>
+    </div>
+    <label class="lbl">ناوی بەکارهێنەر</label>
+    <input class="inp" id="lu" type="text" placeholder="ناوی بەکارهێنەر..."/>
+    <label class="lbl">پاسوەرد</label>
+    <input class="inp" id="lp" type="password" placeholder="••••••••"/>
+    <button class="lbtn" onclick="doLogin()">چوونەژوورەوە</button>
+    <div class="lerr" id="lerr">ناوی بەکارهێنەر یان پاسوەرد هەڵەیە</div>
+    <div class="lhint">
+      👑 ئادمین &nbsp;→&nbsp; <b>admin</b> / <b>admin123</b><br>
+      👤 کارمەند → <b>employee</b> / <b>emp123</b>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="bar">
+    <div class="bar-l">
+      <div class="bar-ico">🏠</div>
+      <div class="bar-name">کۆگای احمد</div>
+    </div>
+    <div class="bar-r">
+      <div class="tbtn" onclick="toggleTheme()" id="tbtn">☀️</div>
+      <div class="upill">
+        <div class="uav">👤</div>
+        <div class="uname" id="uname">—</div>
+      </div>
+      <button class="obtn" onclick="doLogout()">چوونەدەرەوە</button>
+    </div>
+  </div>
+
+  <div class="shell">
+    <div class="sb">
+      <div class="ng">مەنیو</div>
+      <div class="ni on" id="n-dashboard" onclick="gp('dashboard')"><span class="nico">📊</span><span class="nlbl">داشبۆرد</span></div>
+      <div class="ni" id="n-receipt" onclick="gp('receipt')"><span class="nico">🧾</span><span class="nlbl">پسوولە</span></div>
+      <div class="ni" id="n-inventory" onclick="gp('inventory')"><span class="nico">📦</span><span class="nlbl">کۆگا</span></div>
+      <div class="ni" id="n-customers" onclick="gp('customers')"><span class="nico">👥</span><span class="nlbl">کڕیارەکان</span></div>
+      <div class="ni ao" id="n-reports" onclick="gp('reports')"><span class="nico">📈</span><span class="nlbl">ڕاپۆرت</span></div>
+      <div class="ng ao">ئادمین</div>
+      <div class="ni ao" id="n-users" onclick="gp('users')"><span class="nico">⚙️</span><span class="nlbl">بەکارهێنەرەکان</span></div>
+    </div>
+
+    <div class="ct">
+
+      <!-- DASHBOARD -->
+      <div class="pg on" id="pg-dashboard">
+        <div class="ph">
+          <div><div class="ph-h">داشبۆرد</div><div class="ph-s" id="ddate">—</div></div>
+        </div>
+        <div class="sg" id="scards"></div>
+        <div class="gc2">
+          <div class="sec">
+            <div class="sch"><div class="sch-t">🧾 دوایین پسوولەکان</div></div>
+            <table><thead><tr><th>ژمارە</th><th>کڕیار</th><th>کۆی گشتی</th><th>بەروار</th></tr></thead>
+            <tbody id="d-receipts"></tbody></table>
+          </div>
+          <div class="sec">
+            <div class="sch"><div class="sch-t">⚠️ کاڵای کەم لە کۆگا</div></div>
+            <table><thead><tr><th>کاڵا</th><th>بڕ</th><th>دۆخ</th></tr></thead>
+            <tbody id="d-low"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECEIPT -->
+      <div class="pg" id="pg-receipt">
+        <div class="ph no-print">
+          <div class="ph-h">🧾 دروستکردنی پسوولە</div>
+          <div style="display:flex;gap:7px">
+            <button class="btn bgrn" onclick="saveAndPrint()">🖨️ پاشەکەوت و پرینت</button>
+            <button class="btn bgh" onclick="clearReceipt()">🗑️ سڕینەوە</button>
+          </div>
+        </div>
+        <div class="rl">
+          <div>
+            <div class="pnl no-print">
+              <div class="pnl-t">زانیاری کڕیار</div>
+              <div class="fg2 fg3">
+                <div class="fg"><label>ناوی کڕیار</label><input id="rc" type="text" placeholder="ناوی کڕیار..."/></div>
+                <div class="fg"><label>ژمارەی مۆبایل</label><input id="rph" type="text" placeholder="07..."/></div>
+                <div class="fg"><label>بەروار</label><input id="rd" type="date"/></div>
+              </div>
+            </div>
+            <div class="pnl no-print">
+              <div class="pnl-t">کاڵاکان</div>
+              <table class="rit">
+                <thead><tr><th>ناوی کاڵا</th><th style="width:65px">کارتۆن</th><th style="width:65px">دەرزەن</th><th style="width:95px">نرخ (د.ع)</th><th style="width:95px">کۆ</th><th style="width:30px"></th></tr></thead>
+                <tbody id="ritems"></tbody>
+              </table>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:11px">
+                <button class="btn bgh bsm" onclick="addRow()">+ زیادکردنی ڕیز</button>
+                <div style="font-size:14px;font-weight:800;color:var(--gold)">کۆی گشتی: <span id="rgrand">0</span> د.ع</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PREVIEW -->
+          <div>
+            <div style="font-size:12px;color:var(--ink3);margin-bottom:9px" class="no-print">👁 پێشبینی پسوولە</div>
+            <div class="rpv" id="rpa">
+              <div class="rph">
+                <div style="min-width:86px">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px">
+                    <div style="background:#efefef;height:32px;display:flex;align-items:center;justify-content:center;font-size:15px">🍳</div>
+                    <div style="background:#efefef;height:32px;display:flex;align-items:center;justify-content:center;font-size:15px">🥘</div>
+                    <div style="background:#efefef;height:32px;display:flex;align-items:center;justify-content:center;font-size:15px">🫙</div>
+                    <div style="background:#efefef;height:32px;display:flex;align-items:center;justify-content:center;font-size:15px">🔧</div>
+                  </div>
+                </div>
+                <div class="rpc">
+                  <div style="font-size:21px">🏠</div>
+                  <div class="rpct">( بۆ فرۆشتنی هەمووجۆرە کالایەکی ناو مال ( کۆ</div>
+                  
+                  <div style="font-size:8.5px;font-weight:700;color:#1a4fa0;margin-top:2px;letter-spacing:.5px">kogay &amp; Ahmad</div>
+                </div>
+                
+              </div>
+              <div class="rpm">
+                <span>NO: <b id="prno">—</b></span>
+                <span>بەروار: <span id="prdate">—</span></span>
+                <span>بەریز: <span id="prcust">—</span></span>
+                <span>ژ.م: <span id="prphone">—</span></span>
+              </div>
+              <table class="rpt">
+                <thead><tr>
+                  <th style="width:16px">ژ</th><th>ناودرۆک – التفاصیل</th>
+                  <th style="width:36px">کارتۆن</th><th style="width:36px">دەرزەن</th>
+                  <th style="width:48px">نرخ</th><th style="width:56px">کۆی گشتی</th>
+                </tr></thead>
+                <tbody id="pritems"></tbody>
+                <tfoot><tr class="rptot">
+                  <td colspan="5" style="text-align:right;padding-right:5px;font-size:10px">کۆی گشتی المجموع</td>
+                  <td id="prgrand" style="font-weight:800">0</td>
+                </tr></tfoot>
+              </table>
+              <div class="rpf">
+                <span>هەلە دەگەڕێتەوە بۆ هەردوولا</span>
+                <span>نیمزا: ______________</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INVENTORY -->
+      <div class="pg" id="pg-inventory">
+        <div class="ph">
+          <div class="ph-h">📦 کۆگای کاڵا</div>
+          <div style="display:flex;gap:7px;align-items:center">
+            <input class="srch" type="text" placeholder="گەڕان..." oninput="filterInv(this.value)"/>
+            <button class="btn bsolid ao" onclick="openAddItem()">+ زیادکردنی کاڵا</button>
+          </div>
+        </div>
+        <div class="sec">
+          <table>
+            <thead><tr><th>کۆد</th><th>ناوی کاڵا</th><th>جۆر</th><th>بڕ لە کۆگا</th><th>نرخی کڕین</th><th>نرخی فرۆشتن</th><th>دۆخ</th><th class="ao">کردارەکان</th></tr></thead>
+            <tbody id="invbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CUSTOMERS -->
+      <div class="pg" id="pg-customers">
+        <div class="ph">
+          <div class="ph-h">👥 کڕیارەکان</div>
+          <div style="display:flex;gap:7px;align-items:center">
+            <input class="srch" type="text" placeholder="گەڕان..." oninput="filterCust(this.value)"/>
+            <button class="btn bsolid" onclick="openAddCust()">+ زیادکردنی کڕیار</button>
+          </div>
+        </div>
+        <div class="sec">
+          <table>
+            <thead><tr><th>ناو</th><th>ژمارەی مۆبایل</th><th>کۆی کڕین</th><th>دوایین کڕین</th><th>کردارەکان</th></tr></thead>
+            <tbody id="custbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- REPORTS -->
+      <div class="pg ao" id="pg-reports">
+        <div class="ph"><div class="ph-h">📈 ڕاپۆرتەکان</div></div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:16px">
+          <div class="sc"><div class="sc-i">🏆</div><div class="sc-v" id="rt-sales">0</div><div class="sc-l">فرۆشتنی ئەمڕۆ (د.ع)</div></div>
+          <div class="sc"><div class="sc-i">📅</div><div class="sc-v" id="rm-sales">0</div><div class="sc-l">فرۆشتنی ئەم مانگە (د.ع)</div></div>
+          <div class="sc"><div class="sc-i">🧾</div><div class="sc-v" id="rall">0</div><div class="sc-l">کۆی پسوولەکان</div></div>
+        </div>
+        <div class="gc2" style="margin-bottom:14px">
+          <div class="pnl" style="margin:0">
+            <div class="pnl-t">باشترین فرۆشراو</div>
+            <div id="rtop"></div>
+          </div>
+          <div class="sec">
+            <div class="sch"><div class="sch-t">هەموو پسوولەکان</div></div>
+            <div style="max-height:240px;overflow-y:auto">
+              <table>
+                <thead><tr><th>ژمارە</th><th>کڕیار</th><th>کۆی گشتی</th><th>بەروار</th><th>کارمەند</th></tr></thead>
+                <tbody id="rreceipts"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="sec">
+          <div class="sch"><div class="sch-t">⚠️ کاڵای کەم لە کۆگا</div></div>
+          <table>
+            <thead><tr><th>کاڵا</th><th>جۆر</th><th>بڕی مایەوە</th><th>نرخی کڕین</th></tr></thead>
+            <tbody id="rlow"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="pg ao" id="pg-users">
+        <div class="ph">
+          <div class="ph-h">⚙️ بەکارهێنەرەکان</div>
+          <button class="btn bsolid" onclick="openAddUser()">+ زیادکردنی بەکارهێنەر</button>
+        </div>
+        <div class="sec">
+          <table>
+            <thead><tr><th>ناو</th><th>ناوی بەکارهێنەر</th><th>ڕۆڵ</th><th>دۆخ</th><th>کردارەکان</th></tr></thead>
+            <tbody id="ubody"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="ov" id="mov-item">
+  <div class="md">
+    <div class="md-t" id="mov-item-t">زیادکردنی کاڵا</div>
+    <div class="fg2">
+      <div class="fg"><label>کۆدی کاڵا</label><input id="ic" placeholder="G001"/></div>
+      <div class="fg"><label>ناوی کاڵا</label><input id="in" placeholder="ناوی کاڵا..."/></div>
+      <div class="fg"><label>جۆر</label><input id="ica" placeholder="مەتبەخ، شووشە..."/></div>
+      <div class="fg"><label>بڕ لە کۆگا</label><input id="iq" type="number" min="0" placeholder="0"/></div>
+      <div class="fg"><label>نرخی کڕین (د.ع)</label><input id="ico" type="number" min="0" placeholder="0"/></div>
+      <div class="fg"><label>نرخی فرۆشتن (د.ع)</label><input id="ip" type="number" min="0" placeholder="0"/></div>
+    </div>
+    <div class="md-f">
+      <button class="btn bgh" onclick="cm('mov-item')">پاشگەزبوونەوە</button>
+      <button class="btn bsolid" onclick="saveItem()">پاشەکەوتکردن</button>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="mov-cust">
+  <div class="md">
+    <div class="md-t">زیادکردنی کڕیار</div>
+    <div class="fg2">
+      <div class="fg"><label>ناوی کڕیار</label><input id="cn" placeholder="ناو..."/></div>
+      <div class="fg"><label>ژمارەی مۆبایل</label><input id="cp" placeholder="07..."/></div>
+    </div>
+    <div class="md-f">
+      <button class="btn bgh" onclick="cm('mov-cust')">پاشگەزبوونەوە</button>
+      <button class="btn bsolid" onclick="saveCust()">پاشەکەوتکردن</button>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="mov-user">
+  <div class="md">
+    <div class="md-t">زیادکردنی بەکارهێنەر</div>
+    <div class="fg2">
+      <div class="fg"><label>ناوی تەواو</label><input id="un" placeholder="ناو..."/></div>
+      <div class="fg"><label>ناوی بەکارهێنەر</label><input id="uu" placeholder="username..."/></div>
+      <div class="fg"><label>پاسوەرد</label><input id="upw" type="password" placeholder="پاسوەرد..."/></div>
+      <div class="fg"><label>ڕۆڵ</label><select id="ur"><option value="employee">کارمەند</option><option value="admin">ئادمین</option></select></div>
+    </div>
+    <div class="md-f">
+      <button class="btn bgh" onclick="cm('mov-user')">پاشگەزبوونەوە</button>
+      <button class="btn bsolid" onclick="saveUser()">پاشەکەوتکردن</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// DATA
+const D={
+  g(k){try{return JSON.parse(localStorage.getItem('js3_'+k)||'null')}catch{return null}},
+  s(k,v){localStorage.setItem('js3_'+k,JSON.stringify(v))},
+};
+function initData(){
+  if(!D.g('users'))D.s('users',[
+    {id:1,name:'ئادمین',username:'admin',password:'admin123',role:'admin',active:true},
+    {id:2,name:'کارمەند ١',username:'employee',password:'emp123',role:'employee',active:true},
+  ]);
+  if(!D.g('inv'))D.s('inv',[
+    {id:1,code:'G001',name:'برنج',cat:'خواردن',qty:24,cost:45000,price:60000},
+    {id:2,code:'G002',name:'ئاوی تەماتە',cat:'مەتبەخ',qty:3,cost:12000,price:18000},
+    {id:3,code:'G003',name:'سینی شووشە',cat:'شووشە',qty:15,cost:8000,price:13000},
+    {id:4,code:'G004',name:'قازان ئینۆکس',cat:'مەتبەخ',qty:8,cost:75000,price:95000},
+    {id:5,code:'G005',name:'تەختەی ئەمارات',cat:'ئامێری خوارین',qty:2,cost:5000,price:8000},
+    {id:6,code:'G006',name:'دیگی شیر',cat:'مەتبەخ',qty:30,cost:20000,price:28000},
+  ]);
+  if(!D.g('custs'))D.s('custs',[
+    {id:1,name:'ئەحمەد کارەکەر',phone:'07501234567',total:450000,lastDate:'2025-04-20'},
+    {id:2,name:'سارا ئەحمەد',phone:'07509876543',total:280000,lastDate:'2025-04-22'},
+  ]);
+  if(!D.g('receipts'))D.s('receipts',[]);
+  if(!D.g('rctr'))D.s('rctr',1450);
+}
+
+// THEME
+function applyTheme(dark){
+  dark?document.documentElement.setAttribute('data-dark',''):document.documentElement.removeAttribute('data-dark');
+  document.getElementById('tbtn').textContent=dark?'🌙':'☀️';
+  D.s('dark',dark);
+}
+function toggleTheme(){applyTheme(!D.g('dark'));}
+
+// AUTH
+let CU=null;
+function doLogin(){
+  const u=document.getElementById('lu').value.trim();
+  const p=document.getElementById('lp').value.trim();
+  const found=(D.g('users')||[]).find(x=>x.username===u&&x.password===p&&x.active);
+  if(!found){document.getElementById('lerr').style.display='block';return;}
+  CU=found;
+  document.getElementById('lerr').style.display='none';
+  document.getElementById('ls').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('uname').textContent=found.name;
+  applyRole();
+  gp('dashboard');
+}
+function doLogout(){
+  CU=null;
+  document.getElementById('ls').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('lu').value='';
+  document.getElementById('lp').value='';
+}
+function applyRole(){
+  const a=CU?.role==='admin';
+  document.querySelectorAll('.ao').forEach(el=>el.style.display=a?'':'none');
+}
+document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// NAV
+function gp(name){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  const pg=document.getElementById('pg-'+name);
+  const ni=document.getElementById('n-'+name);
+  if(pg)pg.classList.add('on');
+  if(ni)ni.classList.add('on');
+  if(name==='dashboard')renderDash();
+  if(name==='inventory')renderInv();
+  if(name==='customers')renderCust();
+  if(name==='reports')renderReports();
+  if(name==='users')renderUsers();
+  if(name==='receipt')initReceipt();
+}
+
+// DASHBOARD
+function renderDash(){
+  const receipts=D.g('receipts')||[];
+  const inv=D.g('inv')||[];
+  const custs=D.g('custs')||[];
+  const totalSales=receipts.reduce((s,r)=>s+(r.total||0),0);
+  const low=inv.filter(i=>i.qty<5);
+  const days=['یەکشەممە','دووشەممە','سێشەممە','چوارشەممە','پێنجشەممە','هەینی','شەممە'];
+  const months=['کانوونی دووەم','شوبات','ئازار','نیسان','ئایار','حوزەیران','تەممووز','ئاب','ئەیلوول','تشرینی یەکەم','تشرینی دووەم','کانوونی یەکەم'];
+  const now=new Date();
+  document.getElementById('ddate').textContent=`${days[now.getDay()]}، ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('scards').innerHTML=`
+    <div class="sc"><div class="sc-i">🧾</div><div class="sc-v">${receipts.length}</div><div class="sc-l">کۆی پسوولەکان</div></div>
+    <div class="sc"><div class="sc-i">💰</div><div class="sc-v">${fn(totalSales)}</div><div class="sc-l">کۆی فرۆشتن (د.ع)</div></div>
+    <div class="sc"><div class="sc-i">📦</div><div class="sc-v">${inv.length}</div><div class="sc-l">جۆری کاڵا</div></div>
+    <div class="sc"><div class="sc-i">👥</div><div class="sc-v">${custs.length}</div><div class="sc-l">کڕیارەکان</div></div>`;
+  const l5=receipts.slice(-5).reverse();
+  document.getElementById('d-receipts').innerHTML=l5.length?l5.map(r=>`<tr>
+    <td><span class="bd bn" style="font-size:10px">NO-${r.no}</span></td>
+    <td style="font-weight:500">${r.customer||'—'}</td>
+    <td style="color:var(--gold);font-weight:700">${fn(r.total)}</td>
+    <td style="color:var(--ink3);font-size:12px">${r.date}</td></tr>`).join(''):`<tr><td colspan="4"><div class="es">📭 هیچ پسوولەیەک نییە</div></td></tr>`;
+  document.getElementById('d-low').innerHTML=low.length?low.map(i=>`<tr>
+    <td style="font-weight:500">${i.name}</td><td class="low">${i.qty}</td>
+    <td><span class="bd br">کەم</span></td></tr>`).join(''):`<tr><td colspan="3"><div class="es" style="color:var(--grn)">✅ هەموو کاڵا باشن</div></td></tr>`;
+}
+
+// RECEIPT
+let RI=[];
+function initReceipt(){
+  if(RI.length===0){for(let i=0;i<5;i++)RI.push({d:'',c:'',z:'',p:'',t:0});}
+  const today=new Date().toISOString().split('T')[0];
+  document.getElementById('rd').value=today;
+  renderRI();updatePrev();
+}
+function renderRI(){
+  const inv=D.g('inv')||[];
+  const opts=inv.map(i=>`<option value="${i.name}" data-p="${i.price}">`).join('');
+  document.getElementById('ritems').innerHTML=RI.map((item,i)=>`<tr>
+    <td><input type="text" value="${item.d}" list="dl${i}" placeholder="ناوی کاڵا..." onchange="ui(${i},'d',this.value)" style="min-width:100px"/><datalist id="dl${i}">${opts}</datalist></td>
+    <td><input type="number" value="${item.c}" min="0" onchange="ui(${i},'c',this.value)" style="width:58px;text-align:center"/></td>
+    <td><input type="number" value="${item.z}" min="0" onchange="ui(${i},'z',this.value)" style="width:58px;text-align:center"/></td>
+    <td><input type="number" value="${item.p}" min="0" onchange="ui(${i},'p',this.value)" style="width:85px"/></td>
+    <td style="font-weight:700;color:var(--gold);font-size:12px">${fn(item.t)}</td>
+    <td><button class="btn bred bxs" onclick="rr(${i})">✕</button></td>
+  </tr>`).join('');
+  cg();updatePrev();
+}
+function ui(i,f,v){
+  RI[i][f]=v;
+  const c=parseFloat(RI[i].c)||0,z=parseFloat(RI[i].z)||0,p=parseFloat(RI[i].p)||0;
+  RI[i].t=(c+z)*p;
+  renderRI();
+}
+function addRow(){RI.push({d:'',c:'',z:'',p:'',t:0});renderRI();}
+function rr(i){RI.splice(i,1);renderRI();}
+function cg(){
+  const t=RI.reduce((s,i)=>s+(i.t||0),0);
+  const el=document.getElementById('rgrand');if(el)el.textContent=fn(t);
+  return t;
+}
+function updatePrev(){
+  const no=(D.g('rctr')||1450)+1;
+  document.getElementById('prno').textContent=no;
+  document.getElementById('prcust').textContent=document.getElementById('rc')?.value||'—';
+  document.getElementById('prphone').textContent=document.getElementById('rph')?.value||'—';
+  document.getElementById('prdate').textContent=document.getElementById('rd')?.value||'—';
+  let rows='';
+  RI.forEach((item,i)=>{if(item.d||item.t>0)rows+=`<tr>
+    <td>${i+1}</td><td style="text-align:right;padding-right:3px">${item.d}</td>
+    <td>${item.c||''}</td><td>${item.z||''}</td>
+    <td>${fn(item.p)}</td><td style="font-weight:700">${fn(item.t)}</td></tr>`;});
+  document.getElementById('pritems').innerHTML=rows||'<tr><td colspan="6" style="text-align:center;color:#aaa;padding:5px">—</td></tr>';
+  document.getElementById('prgrand').textContent=fn(cg());
+}
+['rc','rph','rd'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',updatePrev);});
+function saveAndPrint(){
+  const cust=document.getElementById('rc').value.trim();
+  const phone=document.getElementById('rph').value.trim();
+  const date=document.getElementById('rd').value;
+  const total=cg();
+  if(!cust){t2('تکایە ناوی کڕیار بنووسە','er');return;}
+  const items=RI.filter(i=>i.d&&i.t>0);
+  if(!items.length){t2('تکایە کەمێک کاڵا زیاد بکە','er');return;}
+  const ctr=(D.g('rctr')||1450)+1;D.s('rctr',ctr);
+  const receipts=D.g('receipts')||[];
+  receipts.push({id:Date.now(),no:ctr,customer:cust,phone,date,total,items,employee:CU?.name});
+  D.s('receipts',receipts);
+  const custs=D.g('custs')||[];
+  const ci=custs.findIndex(c=>c.phone===phone);
+  if(ci>=0){custs[ci].total=(custs[ci].total||0)+total;custs[ci].lastDate=date;}
+  else custs.push({id:Date.now(),name:cust,phone,total,lastDate:date});
+  D.s('custs',custs);
+  const inv=D.g('inv')||[];
+  items.forEach(item=>{const ii=inv.findIndex(i=>i.name===item.d);if(ii>=0)inv[ii].qty=Math.max(0,inv[ii].qty-((parseFloat(item.c)||0)+(parseFloat(item.z)||0)));});
+  D.s('inv',inv);
+  t2('پسوولە پاشەکەوت کرا ✅','ok');
+  setTimeout(()=>window.print(),450);
+}
+function clearReceipt(){
+  document.getElementById('rc').value='';document.getElementById('rph').value='';
+  RI=[];for(let i=0;i<5;i++)RI.push({d:'',c:'',z:'',p:'',t:0});
+  renderRI();updatePrev();
+}
+
+// INVENTORY
+function renderInv(filter=''){
+  const inv=D.g('inv')||[];const isA=CU?.role==='admin';
+  const f=filter.toLowerCase();
+  const fl=f?inv.filter(i=>i.name.toLowerCase().includes(f)||i.code.toLowerCase().includes(f)||i.cat.toLowerCase().includes(f)):inv;
+  document.getElementById('invbody').innerHTML=fl.length?fl.map(i=>`<tr>
+    <td><span class="bd bn" style="font-family:monospace">${i.code}</span></td>
+    <td style="font-weight:500">${i.name}</td>
+    <td><span class="bd bg">${i.cat}</span></td>
+    <td style="${i.qty<5?'color:var(--red);font-weight:700':''}">${i.qty}${i.qty<5?' ⚠️':''}</td>
+    <td style="color:var(--ink2)">${fn(i.cost)}</td>
+    <td style="color:var(--gold);font-weight:700">${fn(i.price)}</td>
+    <td><span class="bd ${i.qty>0?'bv':'br'}">${i.qty>0?'بەردەستە':'تەواوبوو'}</span></td>
+    ${isA?`<td><div style="display:flex;gap:4px"><button class="btn bgh bxs" onclick="editItem(${i.id})">✏️</button><button class="btn bred bxs" onclick="delItem(${i.id})">🗑️</button></div></td>`:'<td></td>'}
+  </tr>`).join(''):`<tr><td colspan="8"><div class="es">📦 هیچ کاڵایەک نییە</div></td></tr>`;
+}
+function filterInv(v){renderInv(v);}
+let EII=null;
+function openAddItem(){EII=null;document.getElementById('mov-item-t').textContent='زیادکردنی کاڵا';['ic','in','ica','iq','ico','ip'].forEach(id=>document.getElementById(id).value='');document.getElementById('mov-item').classList.add('on');}
+function editItem(id){
+  const item=(D.g('inv')||[]).find(i=>i.id===id);if(!item)return;
+  EII=id;document.getElementById('mov-item-t').textContent='دەستکاریکردنی کاڵا';
+  document.getElementById('ic').value=item.code;document.getElementById('in').value=item.name;
+  document.getElementById('ica').value=item.cat;document.getElementById('iq').value=item.qty;
+  document.getElementById('ico').value=item.cost;document.getElementById('ip').value=item.price;
+  document.getElementById('mov-item').classList.add('on');
+}
+function saveItem(){
+  const code=document.getElementById('ic').value.trim();
+  const name=document.getElementById('in').value.trim();
+  const cat=document.getElementById('ica').value.trim();
+  const qty=parseInt(document.getElementById('iq').value)||0;
+  const cost=parseFloat(document.getElementById('ico').value)||0;
+  const price=parseFloat(document.getElementById('ip').value)||0;
+  if(!name){t2('ناوی کاڵا پڕ بکەرەوە','er');return;}
+  const inv=D.g('inv')||[];
+  if(EII){const idx=inv.findIndex(i=>i.id===EII);if(idx>=0)inv[idx]={...inv[idx],code,name,cat,qty,cost,price};}
+  else inv.push({id:Date.now(),code,name,cat,qty,cost,price});
+  D.s('inv',inv);cm('mov-item');renderInv();t2('کاڵا پاشەکەوت کرا ✅','ok');
+}
+function delItem(id){
+  if(!confirm('دڵنیایت؟'))return;
+  D.s('inv',(D.g('inv')||[]).filter(i=>i.id!==id));renderInv();t2('سڕایەوە','ok');
+}
+
+// CUSTOMERS
+function renderCust(filter=''){
+  const custs=D.g('custs')||[];const f=filter.toLowerCase();
+  const fl=f?custs.filter(c=>c.name.toLowerCase().includes(f)||(c.phone||'').includes(f)):custs;
+  document.getElementById('custbody').innerHTML=fl.length?fl.map(c=>`<tr>
+    <td style="font-weight:500">${c.name}</td>
+    <td style="direction:ltr;text-align:right;font-size:12px;color:var(--ink2)">${c.phone||'—'}</td>
+    <td style="color:var(--gold);font-weight:700">${fn(c.total||0)} د.ع</td>
+    <td style="color:var(--ink3);font-size:12px">${c.lastDate||'—'}</td>
+    <td><button class="btn bred bxs" onclick="delCust(${c.id})">🗑️</button></td>
+  </tr>`).join(''):`<tr><td colspan="5"><div class="es">👥 هیچ کڕیارێک نییە</div></td></tr>`;
+}
+function filterCust(v){renderCust(v);}
+function openAddCust(){document.getElementById('cn').value='';document.getElementById('cp').value='';document.getElementById('mov-cust').classList.add('on');}
+function saveCust(){
+  const name=document.getElementById('cn').value.trim();
+  const phone=document.getElementById('cp').value.trim();
+  if(!name){t2('ناوی کڕیار پڕ بکەرەوە','er');return;}
+  const custs=D.g('custs')||[];
+  custs.push({id:Date.now(),name,phone,total:0,lastDate:'—'});
+  D.s('custs',custs);cm('mov-cust');renderCust();t2('کڕیار زیادکرا ✅','ok');
+}
+function delCust(id){
+  if(!confirm('دڵنیایت؟'))return;
+  D.s('custs',(D.g('custs')||[]).filter(c=>c.id!==id));renderCust();t2('سڕایەوە','ok');
+}
+
+// REPORTS
+function renderReports(){
+  const receipts=D.g('receipts')||[];const inv=D.g('inv')||[];
+  const today=new Date().toISOString().split('T')[0];const mo=today.slice(0,7);
+  const todayR=receipts.filter(r=>r.date===today);
+  const moR=receipts.filter(r=>r.date&&r.date.startsWith(mo));
+  document.getElementById('rt-sales').textContent=fn(todayR.reduce((s,r)=>s+(r.total||0),0));
+  document.getElementById('rm-sales').textContent=fn(moR.reduce((s,r)=>s+(r.total||0),0));
+  document.getElementById('rall').textContent=receipts.length;
+  const is={};
+  receipts.forEach(r=>(r.items||[]).forEach(i=>{if(!is[i.d])is[i.d]=0;is[i.d]+=(i.t||i.total||0);}));
+  const sorted=Object.entries(is).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const mx=sorted[0]?sorted[0][1]:1;
+  document.getElementById('rtop').innerHTML=sorted.length?sorted.map(([n,v])=>`<div class="rb"><div class="rbl">${n}</div><div class="rbt"><div class="rbf" style="width:${Math.round(v/mx*100)}%"></div></div><div class="rbv">${fn(v)}</div></div>`).join(''):'<div class="es" style="padding:14px">هیچ داتایەک نییە</div>';
+  document.getElementById('rreceipts').innerHTML=receipts.slice().reverse().map(r=>`<tr>
+    <td><span class="bd bn" style="font-size:10px">NO-${r.no}</span></td>
+    <td style="font-weight:500">${r.customer||'—'}</td>
+    <td style="color:var(--gold);font-weight:700">${fn(r.total)}</td>
+    <td style="color:var(--ink3);font-size:11px">${r.date}</td>
+    <td style="color:var(--ink3);font-size:11px">${r.employee||'—'}</td></tr>`).join('')||`<tr><td colspan="5"><div class="es">هیچ پسوولەیەک نییە</div></td></tr>`;
+  const low=inv.filter(i=>i.qty<5);
+  document.getElementById('rlow').innerHTML=low.length?low.map(i=>`<tr>
+    <td style="font-weight:500">${i.name}</td><td><span class="bd bg">${i.cat}</span></td>
+    <td class="low">${i.qty} ⚠️</td><td style="color:var(--ink2)">${fn(i.cost)}</td></tr>`).join(''):`<tr><td colspan="4"><div class="es" style="color:var(--grn)">✅ هەموو کاڵا باشن</div></td></tr>`;
+}
+
+// USERS
+function renderUsers(){
+  const users=D.g('users')||[];
+  document.getElementById('ubody').innerHTML=users.map(u=>`<tr>
+    <td style="font-weight:500">${u.name}</td>
+    <td style="color:var(--ink3);font-size:12px">${u.username}</td>
+    <td><span class="bd ${u.role==='admin'?'bg':'bn'}">${u.role==='admin'?'ئادمین':'کارمەند'}</span></td>
+    <td><span class="bd ${u.active?'bv':'br'}">${u.active?'چالاک':'ناچالاک'}</span></td>
+    <td><div style="display:flex;gap:5px">
+      <button class="btn bgh bxs" onclick="toggleUser(${u.id})">${u.active?'ناچالاككردن':'چالاككردن'}</button>
+      ${u.id!==1?`<button class="btn bred bxs" onclick="delUser(${u.id})">🗑️</button>`:''}
+    </div></td></tr>`).join('');
+}
+function openAddUser(){['un','uu','upw'].forEach(id=>document.getElementById(id).value='');document.getElementById('ur').value='employee';document.getElementById('mov-user').classList.add('on');}
+function saveUser(){
+  const name=document.getElementById('un').value.trim();
+  const username=document.getElementById('uu').value.trim();
+  const password=document.getElementById('upw').value.trim();
+  const role=document.getElementById('ur').value;
+  if(!name||!username||!password){t2('هەموو خانەکان پڕ بکەرەوە','er');return;}
+  const users=D.g('users')||[];
+  if(users.find(u=>u.username===username)){t2('ناوی بەکارهێنەر پێشتر هەیە','er');return;}
+  users.push({id:Date.now(),name,username,password,role,active:true});
+  D.s('users',users);cm('mov-user');renderUsers();t2('بەکارهێنەر زیادکرا ✅','ok');
+}
+function toggleUser(id){
+  const users=D.g('users')||[];const idx=users.findIndex(u=>u.id===id);
+  if(idx>=0)users[idx].active=!users[idx].active;D.s('users',users);renderUsers();
+}
+function delUser(id){
+  if(!confirm('دڵنیایت؟'))return;
+  D.s('users',(D.g('users')||[]).filter(u=>u.id!==id));renderUsers();t2('سڕایەوە','ok');
+}
+
+// UTILS
+function fn(n){if(n===undefined||n===null||n==='')return '—';const x=Number(n);if(isNaN(x))return '—';return x.toLocaleString('en-IQ');}
+function cm(id){document.getElementById(id).classList.remove('on');}
+document.querySelectorAll('.ov').forEach(el=>el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('on');}));
+function t2(msg,type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast on '+type;
+  setTimeout(()=>t.className='toast',2800);
+}
+
+// INIT
+initData();
+applyTheme(!!D.g('dark'));
+</script>
+</body>
+</html>
