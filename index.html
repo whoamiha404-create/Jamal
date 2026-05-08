@@ -1434,7 +1434,7 @@ const RECEIPT = {
         ? `<div style="position:absolute;top:93.5%;left:60%;width:20%;font-size:11pt;font-weight:900;color:#000;text-align:center">${Number(total).toLocaleString('en-IQ')} د.ع</div>`
         : `<div style="position:absolute;top:98%;left:35%;font-size:8pt;color:#555;direction:rtl">→ پشکنینی دواتر</div>`;
       const empHTML = isLastPage ? `<div style="position:absolute;top:93.5%;right:85%;font-size:9pt;font-weight:700;color:#000;text-align:right">${empName}</div>` : '';
-      return `<div class="rpv" style="position:relative;width:794px;height:1123px;overflow:hidden;background:#fff;">
+      return `<div class="rpv" style="position:relative;width:210mm;height:297mm;overflow:hidden;background:#fff;">
   <img src="${bg}" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block"/>
   <div style="position:absolute;top:13.5%;right:10%;font-size:8pt;font-weight:600;color:#222;direction:ltr">${printTime}</div>
   <div style="position:absolute;top:13.5%;left:8%;font-size:9pt;font-weight:800;color:#c00;direction:ltr">${no}</div>
@@ -1460,16 +1460,21 @@ const RECEIPT = {
     win.document.write(`<!DOCTYPE html>
 <html dir="rtl"><head>
 <meta charset="UTF-8"/>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700;900&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto Kufi Arabic:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
-  @page{size:A4 portrait;margin:0}
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
-  html,body{width:210mm;background:#fff;font-family:'Noto Kufi Arabic',sans-serif;direction:rtl;margin:0;padding:0}
-  .rpv{position:relative;width:210mm;height:297mm;overflow:hidden;page-break-after:always}
+  @page{size:A4 portrait;margin:0mm}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
+  html,body{width:210mm;background:#fff;font-family:'Noto Kufi Arabic',sans-serif;direction:rtl;margin:0!important;padding:0!important}
+  .rpv{position:relative;width:210mm;height:297mm;overflow:hidden;page-break-after:always;margin:0;padding:0}
   .rpv img{position:absolute;top:0;left:0;width:210mm;height:297mm;display:block}
-  @media print{@page{size:A4 portrait;margin:0}html,body{margin:0;padding:0}}
+  @media print{
+    @page{size:A4 portrait;margin:0mm}
+    html,body{margin:0!important;padding:0!important;width:210mm!important}
+    .rpv{margin:0!important;padding:0!important}
+  }
 </style>
-</head><body>
+</head><body style="margin:0;padding:0">
 ${allPagesHTML}
 <script>
   window.onload=function(){
@@ -1531,8 +1536,23 @@ ${allPagesHTML}
           pdf.addImage(imgData, 'JPEG', 0, 0, A4_W, A4_H);
         }
 
-        pdf.save(filename);
-        toast('✅ PDF داگیرا: ' + filename, 'ok');
+        // On iOS/iPadOS, pdf.save() silent download may not work — use blob URL with click
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        if(isIOS){
+          const pdfBlob = pdf.output('blob');
+          const blobUrl = URL.createObjectURL(pdfBlob);
+          const a = document.createElement('a');
+          a.href = blobUrl;
+          a.download = filename;
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(()=>URL.revokeObjectURL(blobUrl), 3000);
+        } else {
+          pdf.save(filename);
+        }
+        toast('✅ PDF داگیرا: ' + filename + (isIOS ? ' — لە Files دا بیبینە' : ''), 'ok');
       } catch(err){
         toast('⚠️ پرینت ئامادەیە — PDF: ' + err.message, 'er');
         console.error(err);
