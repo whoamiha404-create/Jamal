@@ -32,6 +32,27 @@
   --blue:#2870c0;--blt:#0e1e30;--bbd:#1e4878;
   --bdr:#302c27;--bdr2:#403c34;
 }
+/* Sticky header for receipt table */
+#r-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--sur3);
+}
+
+/* Make ONLY the table scrollable */
+#r-table {
+  display: block;
+  max-height: 300px; /* you can change height */
+  overflow-y: auto;
+}
+
+#r-table thead,
+#r-table tbody {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
 body{font-family:'Noto Kufi Arabic',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;direction:rtl;font-size:14px;line-height:1.5}
 #ls{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
 #ls::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,var(--bdr) 1px,transparent 1px);background-size:28px 28px;opacity:.5;pointer-events:none}
@@ -315,16 +336,19 @@ tbody tr:hover td{background:var(--sur2)}
             </div>
             <div class="pnl" style="padding:10px;">
               <div class="pnl-t">کاڵاکان</div>
+
               <table style="width:100%;border-collapse:collapse;table-layout:fixed;" id="r-table">
                 <thead><tr>
-                  <th style="background:var(--sur3);padding:5px 6px;font-size:11px;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:right;width:30%">ناوی کاڵا</th>
-                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:7%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">کارتۆن</th>
-                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:7%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">دەرزەن</th>
-                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:7%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">دانە</th>
-                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:24%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">نرخ بە پێی</th>
-                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:12%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">کۆی گشتی</th>
-                  <th style="background:var(--sur3);padding:5px 4px;width:3%;border-bottom:1px solid var(--bdr)"></th>
+                  <th style="background:var(--sur3);padding:5px 6px;font-size:11px;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:right;width:13%">ناوی کاڵا</th>
+                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:10%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">کارتۆن</th>
+                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:14%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">دەرزەن</th>
+                  <th style="background:var(--sur3);padding:5px 2px;font-size:11px;width:5%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">دانە</th>
+                  <th style="background:var(--sur3);padding-right: 2cm;font-size:11px;width:24%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:right">نرخ بە پێی</th>
+                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:12%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:right">کۆی گشتی</th>
+                  <th style="background:var(--sur3);padding:5px 4px;width:6%;border-bottom:1px solid var(--bdr)"></th>
                 </tr></thead>
+              </table>
+              <table style="width:100%;border-collapse:collapse;table-layout:fixed;" id="r-table">
                 <tbody id="r-rows"></tbody>
               </table>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
@@ -1165,7 +1189,7 @@ const POS = {
 // ── RECEIPT ───────────────────────────────────────
 const RECEIPT = {
   rows: [],
-  TOTAL_ROWS: 20,
+  TOTAL_ROWS: 21,
 
   init() {
     if(!RECEIPT.rows.length){
@@ -1213,10 +1237,10 @@ const RECEIPT = {
     const pv=v=>{const n=parseFloat(v);return isNaN(n)||n<0?0:n;};
     const p=pv(row.p);
     let qty=0;
-    if(row.unit==='c')      qty=pv(row.c);   // کارتۆن selected → only carton qty
-    else if(row.unit==='z') qty=pv(row.z);   // دەرزەن selected → only dozen qty
-    else if(row.unit==='q') qty=pv(row.q);   // دانە selected   → only piece qty
-    else qty=pv(row.c)+pv(row.z)+pv(row.q); // nothing selected → sum all (legacy)
+    if(row.unit==='c')      qty=pv(row.c);
+    else if(row.unit==='z') qty=pv(row.z);
+    else if(row.unit==='q') qty=pv(row.q);
+    else qty=0;
     RECEIPT.rows[i].t=qty*p;
   },
 
@@ -1318,7 +1342,7 @@ const RECEIPT = {
 
   loadSaved(){
     try {
-      const data=API.getReceipts({limit:20});
+      const data=API.getReceipts({limit:21});
       const recs=data?.receipts||[];
       el('rec-count').textContent=data?.total+' پسوولە';
       el('saved-recs').innerHTML=recs.length
@@ -1350,7 +1374,7 @@ const RECEIPT = {
     const total = RECEIPT.calcGrand();
 
     // Split rows into pages of 10
-    const ROWS_PER_PAGE = 20;
+    const ROWS_PER_PAGE = 21;
     const activeRows = RECEIPT.rows; // all rows (including empty ones for layout)
     const pages = [];
     for(let i=0;i<activeRows.length;i+=ROWS_PER_PAGE){
@@ -1358,8 +1382,6 @@ const RECEIPT = {
     }
     if(pages.length===0) pages.push([]);
 
-    // Build HTML for one page
-    // Capture time at print moment
     const printNow=new Date();
     const rawPH=printNow.getHours();
     const pAmpm=rawPH>=12?'PM':'AM';
@@ -1369,7 +1391,28 @@ const RECEIPT = {
     const empName=APP.user?.name||'';
 
     // Row top positions (%) — 20 rows per page, from pixel analysis
-    const PRINT_ROW_TOPS=[35.36,38.44,41.49,44.55,47.63,50.71,53.76,56.82,59.90,62.98,66.03,69.09,72.17,75.22,78.28,81.36,84.44,87.49,90.55,94.55];
+    const PRINT_ROW_TOPS=[
+      28.66,
+      31.44,
+      34.22,
+      37.00,
+      40,
+      43.56,
+      46.34,
+      50,
+      53,
+      56,
+      59,
+      62.24,
+      65.02,
+      67.80,
+      71,
+      74.36,
+      77.50,
+      79.80,
+      83.90,
+      86.48,
+      89.26];
 
     function buildPageHTML(pageRows, pageIndex, totalPages, isLastPage){
       const fs='7.5pt', fontsizename='8.5pt';
@@ -1379,7 +1422,7 @@ const RECEIPT = {
         const row=pageRows[i]||{d:'',c:'',z:'',q:'',p:'',t:0};
         const top=(PRINT_ROW_TOPS[i]||(34.61+i*3.15)).toFixed(2);
         rowsHTML+=`
-          <div style="position:absolute;top:${top}%;right:28.1%;width:43%;font-size:${fontsizename};font-weight:500;color:#111;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:6px">${row.d||''}</div>
+          <div style="position:absolute;top:${top}%;right:7.1%;width:43%;font-size:${fontsizename};font-weight:500;color:#111;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:6px">${row.d||''}</div>
           <div style="position:absolute;top:${top}%;right:48.7%;width:8%;font-size:${fs};color:#111;text-align:center">${dv(row.c)}</div>
           <div style="position:absolute;top:${top}%;right:56.6%;width:8%;font-size:${fs};color:#111;text-align:center">${dv(row.z)}</div>
           <div style="position:absolute;top:${top}%;right:63.9%;width:8%;font-size:${fs};color:#111;text-align:center">${dv(row.q)}</div>
@@ -1388,16 +1431,16 @@ const RECEIPT = {
       }
       const pageLabel = totalPages>1 ? `<div style="position:absolute;top:22%;left:40%;font-size:8pt;color:#888;direction:ltr">${pageIndex+1}/${totalPages}</div>` : '';
       const totalHTML = isLastPage
-        ? `<div style="position:absolute;top:93.8%;left:3.6%;width:14%;font-size:9pt;font-weight:900;color:#000;text-align:center">${Number(total).toLocaleString('en-IQ')} د.ع</div>`
-        : `<div style="position:absolute;top:95%;left:35%;font-size:8pt;color:#555;direction:rtl">→ پشکنینی دواتر</div>`;
-      const empHTML = isLastPage ? `<div style="position:absolute;top:97.5%;right:5%;font-size:8pt;font-weight:700;color:#000;text-align:right">${empName}</div>` : '';
+        ? `<div style="position:absolute;top:93.5%;left:60%;width:20%;font-size:11pt;font-weight:900;color:#000;text-align:center">${Number(total).toLocaleString('en-IQ')} د.ع</div>`
+        : `<div style="position:absolute;top:98%;left:35%;font-size:8pt;color:#555;direction:rtl">→ پشکنینی دواتر</div>`;
+      const empHTML = isLastPage ? `<div style="position:absolute;top:93.5%;right:85%;font-size:9pt;font-weight:700;color:#000;text-align:right">${empName}</div>` : '';
       return `<div class="rpv" style="position:relative;width:794px;height:1123px;overflow:hidden;background:#fff;">
-  <img src="${bg}" style="position:absolute;top:0;left:0;width:794px;height:1123px;display:block"/>
-  <div style="position:absolute;top:27.5%;left:33%;font-size:8pt;font-weight:600;color:#222;direction:ltr">${printTime}</div>
-  <div style="position:absolute;top:27.5%;left:50%;font-size:9pt;font-weight:800;color:#c00;direction:ltr">${no}</div>
+  <img src="${bg}" style="position:absolute;top:0;left:0;width:100%;height:100%;display:block"/>
+  <div style="position:absolute;top:13.5%;right:10%;font-size:8pt;font-weight:600;color:#222;direction:ltr">${printTime}</div>
+  <div style="position:absolute;top:13.5%;left:8%;font-size:9pt;font-weight:800;color:#c00;direction:ltr">${no}</div>
   ${pageLabel}
-  <div style="position:absolute;top:27.5%;right:5%;max-width:40%;font-size:9pt;font-weight:600;color:#000;overflow:hidden;white-space:nowrap;text-align:right">${cust}</div>
-  <div style="position:absolute;top:27.5%;left:5%;font-size:8pt;color:#000;direction:ltr">${date}</div>
+  <div style="position:absolute;top:21.5%;right:13%;max-width:40%;font-size:9pt;font-weight:600;color:#000;overflow:hidden;white-space:nowrap;text-align:right">${cust}</div>
+  <div style="position:absolute;top:21.5%;left:7%;font-size:10pt;color:#000;direction:ltr">${date}</div>
   <div style="position:absolute;top:0;left:0;width:100%;height:100%">${rowsHTML}</div>
   ${totalHTML}
   ${empHTML}
