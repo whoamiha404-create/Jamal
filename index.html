@@ -1206,8 +1206,12 @@ const RECEIPT = {
   renderRows(){
     const inv=POS.inv||API.getInventory()||[];
     const inp=(type,val,ph,onch,extra='')=>`<input type="${type}" value="${val}" placeholder="${ph}" oninput="${onch}" style="width:100%;text-align:center;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 3px;color:var(--ink);font-size:12px;font-family:inherit;outline:none;${extra}"/>`;
-    el('r-rows').innerHTML=RECEIPT.rows.map((row,i)=>`<tr>
-      <td style="padding:2px 4px;border-bottom:1px solid var(--bdr)">
+    el('r-rows').innerHTML=RECEIPT.rows.map((row,i)=>{
+      const isFilled=row.d&&row.t>0;
+      const rowBg=isFilled?'background:#c8e6d0;':'';
+      return `<tr style="${rowBg}">
+      <td style="padding:2px 4px;border-bottom:1px solid var(--bdr);${rowBg}">
+        
         <input type="text" value="${row.d}" list="rl${i}" placeholder="ناوی کاڵا..."
           onchange="RECEIPT.update(${i},'d',this.value)"
           style="width:100%;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 6px;color:var(--ink);font-size:12px;font-family:inherit;outline:none;text-align:right"/>
@@ -1220,8 +1224,9 @@ const RECEIPT = {
         <input type="text" value="${row.p||''}" placeholder="نرخ" oninput="RECEIPT.update(${i},'p',this.value)" style="width:100%;text-align:center;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 3px;color:var(--ink);font-size:12px;font-family:inherit;outline:none"/>
       </td>
       <td style="padding:2px 6px;font-weight:700;color:var(--gold);font-size:12px;border-bottom:1px solid var(--bdr);text-align:center;white-space:nowrap">${row.t>0?fn(row.t):''}</td>
-      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr);text-align:center"><button class="btn bred bxs" onclick="RECEIPT.delRow(${i})">✕</button></td>
-    </tr>`).join('');
+      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr);text-align:center;${rowBg}"><button class="btn bred bxs" onclick="RECEIPT.delRow(${i})">✕</button></td>
+    </tr>`;
+    }).join('');
     RECEIPT.calcGrand();
   },
 
@@ -1259,13 +1264,18 @@ _calcTotal(i){
 
   // _patch: update only the total cell + grand total — NO full re-render
   // This keeps the keyboard open on iPad
-  _patchRow(i){
+_patchRow(i){
     const row=RECEIPT.rows[i];
     // Update the کۆ cell for this row only
     const cells=document.querySelectorAll('#r-rows tr');
     if(cells[i]){
       const totCell=cells[i].querySelector('td:nth-child(6)');
       if(totCell) totCell.textContent=row.t>0?fn(row.t):'';
+      // Update row background color based on filled status
+      const isFilled=row.d&&row.t>0;
+      const bg=isFilled?'#c8e6d0':'';
+      cells[i].style.background=bg;
+      cells[i].querySelectorAll('td').forEach(td=>td.style.background=bg);
     }
     RECEIPT.calcGrand();
   },
