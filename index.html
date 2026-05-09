@@ -235,6 +235,7 @@ tbody tr:hover td{background:var(--sur2)}
     <button class="lbtn" id="lbtn" onclick="APP.login()">چوونەژوورەوە</button>
     <div class="lerr" id="lerr"></div>
     <div class="lspinner" id="lspin">چاوەڕوان بە...</div>
+    <div class="lhint">👑 admin / admin123 &nbsp;|&nbsp; 👤 employee / emp123</div>
   </div>
 </div>
 
@@ -343,7 +344,7 @@ tbody tr:hover td{background:var(--sur2)}
                   <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:10%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">کارتۆن</th>
                   <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:14%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">دانە</th>
                   <th style="background:var(--sur3);padding:5px 2px;font-size:11px;width:5%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">دەرزەن</th>
-                  <th style="background:var(--sur3);padding-right: 2cm;font-size:11px;width:24%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:right">نرخ بە پێی</th>
+<th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:24%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">نرخ</th>
                   <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:12%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:right">کۆی گشتی</th>
                   <th style="background:var(--sur3);padding:5px 4px;width:6%;border-bottom:1px solid var(--bdr)"></th>
                 </tr></thead>
@@ -1215,14 +1216,8 @@ const RECEIPT = {
       <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('txt',row.c||'','0',"RECEIPT.update("+i+",'c',this.value)")}</td>
       <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('txt',row.z||'','0',"RECEIPT.update("+i+",'z',this.value)")}</td>
       <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('txt',row.q||'','0',"RECEIPT.update("+i+",'q',this.value)")}</td>
-      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">
-        <select onchange="RECEIPT.setUnit(${i},this.value)" style="width:100%;background:var(--sur2);border:1px solid var(--gold);border-radius:4px;padding:3px 2px;color:var(--ink);font-size:11px;font-family:inherit;outline:none;margin-bottom:2px">
-          <option value="" ${!row.unit?'selected':''}>پێی...</option>
-          <option value="c" ${row.unit==='c'?'selected':''}>کارتۆن</option>
-          <option value="z" ${row.unit==='z'?'selected':''}>دانە</option>
-          <option value="q" ${row.unit==='q'?'selected':''}>دەرزەن</option>
-        </select>
-        <input type="text" value="${row.p||''}" placeholder="نرخ" oninput="RECEIPT.update(${i},'p',this.value)" style="width:100%;text-align:center;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 3px;color:var(--ink);font-size:11px;font-family:inherit;outline:none"/>
+<td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">
+        <input type="text" value="${row.p||''}" placeholder="نرخ" oninput="RECEIPT.update(${i},'p',this.value)" style="width:100%;text-align:center;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 3px;color:var(--ink);font-size:12px;font-family:inherit;outline:none"/>
       </td>
       <td style="padding:2px 6px;font-weight:700;color:var(--gold);font-size:12px;border-bottom:1px solid var(--bdr);text-align:center;white-space:nowrap">${row.t>0?fn(row.t):''}</td>
       <td style="padding:2px 3px;border-bottom:1px solid var(--bdr);text-align:center"><button class="btn bred bxs" onclick="RECEIPT.delRow(${i})">✕</button></td>
@@ -1232,18 +1227,18 @@ const RECEIPT = {
 
   // Called when user picks unit type (کارتۆن / دانە / دەرزەن)
   // Shared calculation: only the SELECTED unit's qty counts
-  _calcTotal(i){
+_calcTotal(i){
     const row=RECEIPT.rows[i];
     const pv=v=>{const n=parseFloat(v);return isNaN(n)||n<0?0:n;};
     const p=pv(row.p);
+    // Auto-detect which qty is filled — priority: کارتۆن → دانە → دەرزەن
+    const c=pv(row.c), z=pv(row.z), q=pv(row.q);
     let qty=0;
-    if(row.unit==='c')      qty=pv(row.c);
-    else if(row.unit==='z') qty=pv(row.z);
-    else if(row.unit==='q') qty=pv(row.q);
-    else qty=0;
+    if(c>0)      qty=c;
+    else if(z>0) qty=z;
+    else if(q>0) qty=q;
     RECEIPT.rows[i].t=qty*p;
   },
-
   setUnit(i, unit){
     RECEIPT.rows[i].unit=unit;
     // Auto-fill price from inventory based on selected unit
@@ -1275,31 +1270,41 @@ const RECEIPT = {
     RECEIPT.calcGrand();
   },
 
-  update(i,f,v){
+update(i,f,v){
     RECEIPT.rows[i][f]=v;
     if(f==='d'){
-      // Item name changed — need full re-render for datalist + price autofill
+      // Item name changed — find item; price will autofill when user enters qty
       const inv=POS.inv||API.getInventory()||[];
       const item=inv.find(x=>x.name===v);
       if(item){
         RECEIPT.rows[i].inv_id=item.id;
-        const unit=RECEIPT.rows[i].unit;
-        if(unit==='c')      RECEIPT.rows[i].p=item.price_c||item.price||0;
-        else if(unit==='z') RECEIPT.rows[i].p=item.price_z||0;
-        else if(unit==='q') RECEIPT.rows[i].p=item.price_q||0;
-        else                RECEIPT.rows[i].p=item.price_c||item.price||0;
+        // Default price = price_c (will be overridden when user fills c/z/q)
+        RECEIPT.rows[i].p=item.price_c||item.price||0;
       }
       RECEIPT._calcTotal(i);
       RECEIPT.renderRows();
       RECEIPT.calcGrand();
     } else {
-      // Qty or price changed — just recalc and patch the total cell
-      // NO full re-render → keyboard stays open on iPad
+      // Qty or price changed — auto-pick price from inventory based on field
+      if(f==='c'||f==='z'||f==='q'){
+        const inv=POS.inv||API.getInventory()||[];
+        const item=inv.find(x=>x.id===RECEIPT.rows[i].inv_id);
+        if(item){
+          if(f==='c'&&parseFloat(v)>0)      RECEIPT.rows[i].p=item.price_c||item.price||0;
+          else if(f==='z'&&parseFloat(v)>0) RECEIPT.rows[i].p=item.price_z||0;
+          else if(f==='q'&&parseFloat(v)>0) RECEIPT.rows[i].p=item.price_q||0;
+          // Update price input value in the DOM without full re-render
+          const cells=document.querySelectorAll('#r-rows tr');
+          if(cells[i]){
+            const priceInput=cells[i].querySelector('td:nth-child(5) input');
+            if(priceInput) priceInput.value=RECEIPT.rows[i].p||'';
+          }
+        }
+      }
       RECEIPT._calcTotal(i);
       RECEIPT._patchRow(i);
     }
   },
-
   addRow(){RECEIPT.rows.push({d:'',c:'',z:'',q:'',p:'',t:0,img:'',inv_id:'',unit:''});RECEIPT.renderRows();RECEIPT.updatePreview();},
   delRow(i){if(RECEIPT.rows.length>1){RECEIPT.rows.splice(i,1);RECEIPT.renderRows();RECEIPT.updatePreview();}},
 
