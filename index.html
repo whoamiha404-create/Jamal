@@ -34,12 +34,16 @@
   --bdr:#302c27;--bdr2:#403c34;
 }
 /* Sticky header for receipt table */
-#r-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: var(--sur3);
+
+
+/* Make ONLY the table scrollable */
+#r-table {
+  display: block;
+  max-height: 600px; /* you can change height */
+  overflow-y: auto;
 }
+
+
 body{font-family:'Noto Kufi Arabic',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;direction:rtl;font-size:14px;line-height:1.5}
 #ls{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
 #ls::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,var(--bdr) 1px,transparent 1px);background-size:28px 28px;opacity:.5;pointer-events:none}
@@ -321,9 +325,13 @@ tbody tr:hover td{background:var(--sur2)}
                 <div class="fg"><label>بەروار</label><input id="rd" type="date" onchange="RECEIPT.updatePreview()"/></div>
               </div>
             </div>
+
+
+
            <div class="pnl" style="padding:10px;">
               <div class="pnl-t">کاڵاکان</div>
-              <table style="width:100%;border-collapse:collapse;table-layout:fixed;" id="r-table">
+              
+<table style="width:100%;border-collapse:collapse;table-layout:fixed;" id="r-table">
                 <thead><tr>
                   <th style="background:var(--sur3);padding:5px 6px;font-size:11px;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:right;width:30%">ناوی کاڵا</th>
                   <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:7%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">کارتۆن</th>
@@ -333,13 +341,27 @@ tbody tr:hover td{background:var(--sur2)}
                   <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:12%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">کۆی گشتی</th>
                   <th style="background:var(--sur3);padding:5px 4px;width:3%;border-bottom:1px solid var(--bdr)"></th>
                 </tr></thead>
+                
+              </table>
+
+
+              <table style="width:100%;border-collapse:collapse;table-layout:fixed;" id="r-table">
+                
                 <tbody id="r-rows"></tbody>
               </table>
+              
               <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
                 <button class="btn bgh bsm" onclick="RECEIPT.addRow()">+ ڕیزی نوێ</button>
                 <div style="font-size:14px;font-weight:800;color:var(--gold)">کۆی گشتی: <span id="r-grand">0</span> د.ع</div>
               </div>
             </div>
+
+
+
+
+
+            
+
             </div>
             <div class="pnl">
               <div class="pnl-t" style="display:flex;justify-content:space-between">
@@ -1178,7 +1200,7 @@ const RECEIPT = {
 
   init() {
     if(!RECEIPT.rows.length){
-      for(let i=0;i<RECEIPT.TOTAL_ROWS;i++) RECEIPT.rows.push({d:'',c:'',z:'',q:'',p:'',t:0,img:'',inv_id:'',unit:''});
+      for(let i=0;i<RECEIPT.TOTAL_ROWS;i++) RECEIPT.rows.push({d:'',z:'',c:'',q:'',p:'',t:0,img:'',inv_id:'',unit:''});
     }
     const today=new Date().toISOString().split('T')[0];
     el('rd').value=today;
@@ -1227,14 +1249,14 @@ _calcTotal(i){
     const p=pv(row.p);
     // If user explicitly selected a unit from the dropdown, use only that qty
     let qty=0;
-    if(row.unit==='c')      qty=pv(row.c);
-    else if(row.unit==='z') qty=pv(row.z);
+    if(row.unit==='z')      qty=pv(row.z);
+    else if(row.unit==='c') qty=pv(row.c);
     else if(row.unit==='q') qty=pv(row.q);
     else {
       // Auto-detect: priority کارتۆن → دانە → دەرزەن
       const c=pv(row.c), z=pv(row.z), q=pv(row.q);
-      if(c>0)      qty=c;
-      else if(z>0) qty=z;
+      if(z>0)      qty=z;
+      else if(c>0) qty=c;
       else if(q>0) qty=q;
     }
     RECEIPT.rows[i].t=qty*p;
@@ -1411,17 +1433,17 @@ update(i,f,v){
       89.26];
 
     function buildPageHTML(pageRows, pageIndex, totalPages, isLastPage){
-      const fs='8pt', fontsizename='8.5pt';
+      const fs='9pt', fontsizename='8.5pt';
       const dv=v=>(v&&String(v).trim()!==''&&String(v).trim()!=='-')?String(v):'';
       let rowsHTML='';
       for(let i=0;i<ROWS_PER_PAGE;i++){
-        const row=pageRows[i]||{d:'',c:'',z:'',q:'',p:'',t:0};
+        const row=pageRows[i]||{d:'',c:'',q:'',z:'',p:'',t:0};
         const top=(PRINT_ROW_TOPS[i]||(34.61+i*3.15)).toFixed(2);
         rowsHTML+=`
           <div style="position:absolute;top:${top}%;right:7.1%;width:43%;font-size:${fontsizename};font-weight:500;color:#111;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:6px">${row.d||''}</div>
           <div style="position:absolute;top:${top}%;right:48.7%;width:8%;font-size:${fs};color:#111;text-align:center">${dv(row.c)}</div>
-          <div style="position:absolute;top:${top}%;right:56.6%;width:8%;font-size:${fs};color:#111;text-align:center">${dv(row.z)}</div>
-          <div style="position:absolute;top:${top}%;right:63.9%;width:8%;font-size:${fs};color:#111;text-align:center">${dv(row.q)}</div>
+          <div style="position:absolute;top:${top}%;right:56.6%;width:8%;font-size:${fs};color:#111;text-align:center">${dv(row.q)}</div>
+          <div style="position:absolute;top:${top}%;right:63.9%;width:8%;font-size:${fs};color:#111;text-align:center">${dv(row.z)}</div>
           <div style="position:absolute;top:${top}%;right:72.8%;width:11%;font-size:${fs};color:#111;text-align:center">${row.p&&row.p!=0?Number(row.p).toLocaleString('en-IQ'):''}</div>
           <div style="position:absolute;top:${top}%;right:83.4%;width:13.5%;font-size:${fs};font-weight:${row.t>0?'700':'400'};color:#111;text-align:center">${row.t>0?Number(row.t).toLocaleString('en-IQ'):''}</div>`;
       }
