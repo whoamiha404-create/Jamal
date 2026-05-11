@@ -1230,8 +1230,10 @@ const RECEIPT = {
             <option value="c" ${row.unit==='c'?'selected':''}>کارتۆن</option>
             <option value="z" ${row.unit==='z'?'selected':''}>دانە</option>
             <option value="q" ${row.unit==='q'?'selected':''}>دەرزەن</option>
+<td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">
+        <input type="text" value="${row.p||''}" placeholder="نرخ" oninput="RECEIPT.update(${i},'p',this.value)" style="width:100%;text-align:center;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 3px;color:var(--ink);font-size:12px;font-family:inherit;outline:none"/>
+      </td>
           </select>
-          <input type="text" value="${row.p||''}" placeholder="نرخ" oninput="RECEIPT.update(${i},'p',this.value)" style="flex:1;text-align:center;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 3px;color:var(--ink);font-size:12px;font-family:inherit;outline:none"/>
         </div>
       </td>
       <td style="padding:2px 6px;font-weight:700;color:var(--gold);font-size:12px;border-bottom:1px solid var(--bdr);text-align:left;white-space:nowrap">${row.t>0?fn(row.t):''}</td>
