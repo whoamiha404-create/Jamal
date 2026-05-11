@@ -1209,31 +1209,28 @@ const RECEIPT = {
   renderRows(){
     const inv=POS.inv||API.getInventory()||[];
     const inp=(type,val,ph,onch,extra='')=>`<input type="${type}" value="${val}" placeholder="${ph}" oninput="${onch}" style="width:100%;text-align:center;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 3px;color:var(--ink);font-size:12px;font-family:inherit;outline:none;${extra}"/>`;
-    el('r-rows').innerHTML=RECEIPT.rows.map((row,i)=>{
-      const isFilled=row.d&&row.t>0;
-      const rowBg=isFilled?'background:#c8e6d0;':'';
-      return `<tr style="${rowBg}">
-      <td style="padding:2px 4px;border-bottom:1px solid var(--bdr);${rowBg}">
-        
+    el('r-rows').innerHTML=RECEIPT.rows.map((row,i)=>`<tr>
+      <td style="padding:2px 4px;border-bottom:1px solid var(--bdr)">
         <input type="text" value="${row.d}" list="rl${i}" placeholder="ناوی کاڵا..."
           onchange="RECEIPT.update(${i},'d',this.value)"
           style="width:100%;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 6px;color:var(--ink);font-size:12px;font-family:inherit;outline:none;text-align:right"/>
         <datalist id="rl${i}">${inv.map(x=>`<option value="${x.name}" data-id="${x.id}" data-price="${x.price}">`).join('')}</datalist>
       </td>
-      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('txt',row.c||'','0',"RECEIPT.update("+i+",'c',this.value)")}</td>
-      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('txt',row.z||'','0',"RECEIPT.update("+i+",'z',this.value)")}</td>
-      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('txt',row.q||'','0',"RECEIPT.update("+i+",'q',this.value)")}</td>
-<td style="padding:2px 3px;border-bottom:1px solid var(--bdr)"> <div style="display:flex;gap:3px;align-items:center;width:100%"> <select onchange="RECEIPT.setUnit(${i},this.value)" style=" width:48%; height:32px; background:var(--sur2); border:1px solid var(--bdr); border-radius:4px; padding:0 4px; color:var(--ink); 
-  font-size:11px; font-family:inherit; outline:none; cursor:pointer; " > 
-  <option value="q" ${row.unit==='q'?'selected':''}>دەرزەن</option>
-  <option value="c" ${row.unit==='c'?'selected':''}>کارتۆن</option> 
-  <option value="z" ${row.unit==='z'?'selected':''}>دانە</option>
-    
-  </select> <input type="text" value="${row.p||''}" placeholder="نرخ" oninput="RECEIPT.update(${i},'p',this.value)" style=" flex:1; height:32px; min-width:0; text-align:center; background:var(--sur2); border:1px solid var(--bdr); border-radius:4px; padding:0 6px; color:var(--ink); font-size:12px; font-family:inherit; outline:none; " /> </div> </td>
-      <td style="padding:2px 6px;font-weight:700;color:var(--gold);font-size:12px;border-bottom:1px solid var(--bdr);text-align:left;white-space:nowrap">${row.t>0?fn(row.t):''}</td>
-      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr);text-align:center;${rowBg}"><button class="btn bred bxs" onclick="RECEIPT.delRow(${i})">✕</button></td>
-    </tr>`;
-    }).join('');
+      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('number',row.c||'','0',"RECEIPT.update("+i+",'c',this.value)")}</td>
+      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('number',row.z||'','0',"RECEIPT.update("+i+",'z',this.value)")}</td>
+      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('number',row.q||'','0',"RECEIPT.update("+i+",'q',this.value)")}</td>
+      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">
+        <select onchange="RECEIPT.setUnit(${i},this.value)" style="width:100%;background:var(--sur2);border:1px solid var(--gold);border-radius:4px;padding:3px 2px;color:var(--ink);font-size:11px;font-family:inherit;outline:none;margin-bottom:2px">
+          <option value="" ${!row.unit?'selected':''}>پێی...</option>
+          <option value="c" ${row.unit==='c'?'selected':''}>کارتۆن</option>
+          <option value="z" ${row.unit==='z'?'selected':''}>دەرزەن</option>
+          <option value="q" ${row.unit==='q'?'selected':''}>دانە</option>
+        </select>
+        <input type="number" value="${row.p||''}" placeholder="نرخ" oninput="RECEIPT.update(${i},'p',this.value)" style="width:100%;text-align:center;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 3px;color:var(--ink);font-size:11px;font-family:inherit;outline:none"/>
+      </td>
+      <td style="padding:2px 6px;font-weight:700;color:var(--gold);font-size:12px;border-bottom:1px solid var(--bdr);text-align:center;white-space:nowrap">${row.t>0?fn(row.t):''}</td>
+      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr);text-align:center"><button class="btn bred bxs" onclick="RECEIPT.delRow(${i})">✕</button></td>
+    </tr>`).join('');
     RECEIPT.calcGrand();
   },
 
