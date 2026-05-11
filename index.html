@@ -40,20 +40,6 @@
   z-index: 50;
   background: var(--sur3);
 }
-
-/* Make ONLY the table scrollable */
-#r-table {
-  display: block;
-  max-height: 600px; /* you can change height */
-  overflow-y: auto;
-}
-
-#r-table thead,
-#r-table tbody {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
 body{font-family:'Noto Kufi Arabic',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;direction:rtl;font-size:14px;line-height:1.5}
 #ls{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg)}
 #ls::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle,var(--bdr) 1px,transparent 1px);background-size:28px 28px;opacity:.5;pointer-events:none}
@@ -335,30 +321,25 @@ tbody tr:hover td{background:var(--sur2)}
                 <div class="fg"><label>بەروار</label><input id="rd" type="date" onchange="RECEIPT.updatePreview()"/></div>
               </div>
             </div>
-            <div class="pnl" style="padding:10px;">
+           <div class="pnl" style="padding:10px;">
               <div class="pnl-t">کاڵاکان</div>
-
               <table style="width:100%;border-collapse:collapse;table-layout:fixed;" id="r-table">
                 <thead><tr>
-                  <th style="background:var(--sur3);padding:5px 6px;font-size:11px;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:right;width:13%">ناوی کاڵا</th>
-                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:10%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">کارتۆن</th>
-                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:14%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">دانە</th>
-                  <th style="background:var(--sur3);padding:5px 2px;font-size:11px;width:5%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">دەرزەن</th>
-<th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:28%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">
-  <span style="display:inline-block;width:45%;text-align:center">جۆری نرخ</span>
-  <span style="display:inline-block;width:50%;text-align:center">نرخ</span>
-</th>
-                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:12%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:right">کۆی گشتی</th>
-                  <th style="background:var(--sur3);padding:5px 4px;width:6%;border-bottom:1px solid var(--bdr)"></th>
+                  <th style="background:var(--sur3);padding:5px 6px;font-size:11px;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:right;width:30%">ناوی کاڵا</th>
+                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:7%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">کارتۆن</th>
+                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:7%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">دەرزەن</th>
+                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:7%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">دانە</th>
+                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:24%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">نرخ بە پێی</th>
+                  <th style="background:var(--sur3);padding:5px 4px;font-size:11px;width:12%;font-weight:700;color:var(--ink3);border-bottom:1px solid var(--bdr);text-align:center">کۆی گشتی</th>
+                  <th style="background:var(--sur3);padding:5px 4px;width:3%;border-bottom:1px solid var(--bdr)"></th>
                 </tr></thead>
-              </table>
-              <table style="width:100%;border-collapse:collapse;table-layout:fixed;" id="r-table">
                 <tbody id="r-rows"></tbody>
               </table>
               <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
                 <button class="btn bgh bsm" onclick="RECEIPT.addRow()">+ ڕیزی نوێ</button>
                 <div style="font-size:14px;font-weight:800;color:var(--gold)">کۆی گشتی: <span id="r-grand">0</span> د.ع</div>
               </div>
+            </div>
             </div>
             <div class="pnl">
               <div class="pnl-t" style="display:flex;justify-content:space-between">
@@ -1211,8 +1192,7 @@ const RECEIPT = {
     const inp=(type,val,ph,onch,extra='')=>`<input type="${type}" value="${val}" placeholder="${ph}" oninput="${onch}" style="width:100%;text-align:center;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 3px;color:var(--ink);font-size:12px;font-family:inherit;outline:none;${extra}"/>`;
     el('r-rows').innerHTML=RECEIPT.rows.map((row,i)=>`<tr>
       <td style="padding:2px 4px;border-bottom:1px solid var(--bdr)">
-        <input type="text" value="${row.d}" list="rl${i}" placeholder="ناوی کاڵا..."
-          onchange="RECEIPT.update(${i},'d',this.value)"
+       <input type="text" value="${row.d}" list="rl${i}" placeholder="ناوی کاڵا..." onchange="RECEIPT.update(${i},'d',this.value)" onkeydown="if(event.key==='Tab'){event.preventDefault();this.closest('tr').children[1].querySelector('input').focus();}""
           style="width:100%;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 6px;color:var(--ink);font-size:12px;font-family:inherit;outline:none;text-align:right"/>
         <datalist id="rl${i}">${inv.map(x=>`<option value="${x.name}" data-id="${x.id}" data-price="${x.price}">`).join('')}</datalist>
       </td>
@@ -1448,7 +1428,7 @@ update(i,f,v){
       89.26];
 
     function buildPageHTML(pageRows, pageIndex, totalPages, isLastPage){
-      const fs='7.5pt', fontsizename='8.5pt';
+      const fs='8pt', fontsizename='8.5pt';
       const dv=v=>(v&&String(v).trim()!==''&&String(v).trim()!=='-')?String(v):'';
       let rowsHTML='';
       for(let i=0;i<ROWS_PER_PAGE;i++){
