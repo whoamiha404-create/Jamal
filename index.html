@@ -1216,9 +1216,9 @@ const RECEIPT = {
           style="width:100%;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 6px;color:var(--ink);font-size:12px;font-family:inherit;outline:none;text-align:right"/>
         <datalist id="rl${i}">${inv.map(x=>`<option value="${x.name}" data-id="${x.id}" data-price="${x.price}">`).join('')}</datalist>
       </td>
-      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('number',row.c||'','0',"RECEIPT.update("+i+",'c',this.value)")}</td>
-      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('number',row.z||'','0',"RECEIPT.update("+i+",'z',this.value)")}</td>
-      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('number',row.q||'','0',"RECEIPT.update("+i+",'q',this.value)")}</td>
+      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('text',row.c||'','0',"RECEIPT.update("+i+",'c',this.value)")}</td>
+      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('text',row.z||'','0',"RECEIPT.update("+i+",'z',this.value)")}</td>
+      <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">${inp('text',row.q||'','0',"RECEIPT.update("+i+",'q',this.value)")}</td>
       <td style="padding:2px 3px;border-bottom:1px solid var(--bdr)">
         <select onchange="RECEIPT.setUnit(${i},this.value)" style="width:100%;background:var(--sur2);border:1px solid var(--gold);border-radius:4px;padding:3px 2px;color:var(--ink);font-size:11px;font-family:inherit;outline:none;margin-bottom:2px">
           <option value="" ${!row.unit?'selected':''}>پێی...</option>
