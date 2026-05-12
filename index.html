@@ -179,8 +179,13 @@ tbody tr:hover td{background:var(--sur2)}
 @media(max-width:900px){
   .sb{width:46px}.ni .nlbl,.ng{display:none}
   .sg,.gc2,.gc3{grid-template-columns:1fr 1fr}
+  #inv-inline-form > div:last-child{grid-template-columns:1fr 1fr!important}
   .pos-layout{grid-template-columns:1fr;height:auto}
   .pos-right{height:340px}
+}
+@media(max-width:560px){
+  #inv-inline-form > div:last-child{grid-template-columns:1fr!important}
+  #inv-inline-form [style*="grid-column:span 2"]{grid-column:span 1!important}
 }
 /* Receipt page full-width table */
 #pg-receipt .pnl{padding:10px 8px;}
@@ -384,7 +389,27 @@ tbody tr:hover td{background:var(--sur2)}
           <div class="ph-h">📦 کۆگای کاڵا</div>
           <div style="display:flex;gap:7px;align-items:center">
             <input class="srch" type="text" placeholder="گەڕان..." oninput="INV.filter(this.value)"/>
-            <button class="btn bsolid ao" onclick="INV.openAdd()">+ زیادکردنی کاڵا</button>
+          </div>
+        </div>
+        <div class="pnl ao" id="inv-inline-form">
+          <div class="pnl-t" id="inv-form-title">زیادکردنی کاڵا</div>
+          <div style="display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px;align-items:end">
+            <div class="fg"><label>کۆد/بارکۆد</label><input id="ii-code" placeholder="G001"/></div>
+            <div class="fg"><label>ناوی کاڵا</label><input id="ii-name" placeholder="ناوی کاڵا..."/></div>
+            <div class="fg"><label>جۆر</label><input id="ii-cat" placeholder="مەتبەخ، شووشە..."/></div>
+            <div class="fg"><label>بڕ لە کۆگا</label><input id="ii-qty" type="number" min="0" placeholder="0"/></div>
+            <div class="fg"><label>نرخی کڕین (د.ع)</label><input id="ii-cost" type="number" min="0" placeholder="0"/></div>
+            <div class="fg"><label>نرخ بە کارتۆن (د.ع)</label><input id="ii-price-c" type="number" min="0" placeholder="0"/></div>
+            <div class="fg"><label>نرخ بە دانە (د.ع)</label><input id="ii-price-z" type="number" min="0" placeholder="0"/></div>
+            <div class="fg"><label>نرخ بە دەرزەن (د.ع)</label><input id="ii-price-q" type="number" min="0" placeholder="0"/></div>
+            <div class="fg" style="grid-column:span 2"><label>وێنەی کاڵا</label>
+              <input type="file" id="ii-img" accept="image/*" onchange="INV.previewImg(this)" style="font-size:12px"/>
+              <img id="ii-img-preview" style="max-width:80px;max-height:80px;border-radius:6px;margin-top:6px;display:none"/>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;grid-column:span 2">
+              <button class="btn bgh" onclick="INV.openAdd()">پاککردنەوە</button>
+              <button class="btn bsolid" onclick="INV.save()">پاشەکەوتکردن</button>
+            </div>
           </div>
         </div>
         <div class="sec">
@@ -439,28 +464,6 @@ tbody tr:hover td{background:var(--sur2)}
 </div>
 
 <!-- MODALS -->
-<div class="ov" id="ov-inv"><div class="md">
-  <div class="md-t" id="ov-inv-t">زیادکردنی کاڵا</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px">
-    <div class="fg"><label>کۆد/بارکۆد</label><input id="ii-code" placeholder="G001"/></div>
-    <div class="fg"><label>ناوی کاڵا</label><input id="ii-name" placeholder="ناوی کاڵا..."/></div>
-    <div class="fg"><label>جۆر</label><input id="ii-cat" placeholder="مەتبەخ، شووشە..."/></div>
-    <div class="fg"><label>بڕ لە کۆگا</label><input id="ii-qty" type="number" min="0" placeholder="0"/></div>
-    <div class="fg"><label>نرخی کڕین (د.ع)</label><input id="ii-cost" type="number" min="0" placeholder="0"/></div>
-    <div class="fg"><label>نرخ بە کارتۆن (د.ع)</label><input id="ii-price-c" type="number" min="0" placeholder="0"/></div>
-    <div class="fg"><label>نرخ بە دانە (د.ع)</label><input id="ii-price-z" type="number" min="0" placeholder="0"/></div>
-    <div class="fg"><label>نرخ بە دەرزەن (د.ع)</label><input id="ii-price-q" type="number" min="0" placeholder="0"/></div>
-    <div class="fg" style="grid-column:span 2"><label>وێنەی کاڵا</label>
-      <input type="file" id="ii-img" accept="image/*" onchange="INV.previewImg(this)" style="font-size:12px"/>
-      <img id="ii-img-preview" style="max-width:80px;max-height:80px;border-radius:6px;margin-top:6px;display:none"/>
-    </div>
-  </div>
-  <div class="md-f">
-    <button class="btn bgh" onclick="cm('ov-inv')">پاشگەزبوونەوە</button>
-    <button class="btn bsolid" onclick="INV.save()">پاشەکەوتکردن</button>
-  </div>
-</div></div>
-
 <div class="ov" id="ov-cust"><div class="md">
   <div class="md-t">زیادکردنی کڕیار</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px">
@@ -1198,9 +1201,13 @@ const RECEIPT = {
   rows: [],
   TOTAL_ROWS: 21,
 
+  blankRow(){
+    return {d:'',z:'',c:'',q:'',p:'',t:0,img:'',inv_id:'',unit:'',done:false};
+  },
+
   init() {
     if(!RECEIPT.rows.length){
-      for(let i=0;i<RECEIPT.TOTAL_ROWS;i++) RECEIPT.rows.push({d:'',z:'',c:'',q:'',p:'',t:0,img:'',inv_id:'',unit:''});
+      for(let i=0;i<RECEIPT.TOTAL_ROWS;i++) RECEIPT.rows.push(RECEIPT.blankRow());
     }
     const today=new Date().toISOString().split('T')[0];
     el('rd').value=today;
@@ -1209,8 +1216,50 @@ const RECEIPT = {
     RECEIPT.loadSaved();
   },
 
+  isRowComplete(row){
+    return !!(row?.d && Number(row.t)>0);
+  },
+
+  applyRowState(i){
+    const row=RECEIPT.rows[i];
+    if(RECEIPT.isRowComplete(row)) row.done=true;
+    const tr=document.querySelectorAll('#r-rows tr')[i];
+    if(!tr) return;
+    const bg=row?.done?'#c8e6d0':'';
+    tr.style.background=bg;
+    tr.querySelectorAll('td').forEach(td=>td.style.background=bg);
+  },
+
+  applyRowStates(){
+    RECEIPT.rows.forEach((_,i)=>RECEIPT.applyRowState(i));
+  },
+
+  resetRowMarks(){
+    RECEIPT.rows.forEach(r=>{r.done=false;});
+    RECEIPT.applyRowStates();
+  },
+
+  safeAttr(v){
+    return String(v??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  },
+
+  matchItems(q=''){
+    const inv=(POS.inv&&POS.inv.length?POS.inv:API.getInventory())||[];
+    const needle=String(q).trim().toLowerCase();
+    if(!needle) return inv.slice(0,50);
+    return inv.filter(x=>String(x.name||'').toLowerCase().startsWith(needle)).slice(0,50);
+  },
+
+  suggestionOptions(q=''){
+    return RECEIPT.matchItems(q).map(x=>`<option value="${RECEIPT.safeAttr(x.name)}">`).join('');
+  },
+
+  refreshSuggestions(i,q=''){
+    const dl=el('rl'+i);
+    if(dl) dl.innerHTML=RECEIPT.suggestionOptions(q);
+  },
+
   renderRows(){
-    const inv=POS.inv||API.getInventory()||[];
     const inp=(type,val,ph,onch,extra='')=>`<input type="${type}" value="${val}" placeholder="${ph}" oninput="${onch}" style="width:100%;text-align:center;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 3px;color:var(--ink);font-size:12px;font-family:inherit;outline:none;${extra}"/>`;
     el('r-rows').innerHTML=RECEIPT.rows.map((row,i)=>`<tr>
       <td style="padding:2px 4px;border-bottom:1px solid var(--bdr)">
@@ -1219,7 +1268,7 @@ const RECEIPT = {
           onkeydown="if(event.key==='Tab'){event.preventDefault();this.closest('tr').children[1].querySelector('input').focus();}"
           style="width:100%;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 6px;color:var(--ink);font-size:12px;font-family:inherit;outline:none;text-align:right"/>
 
-        <datalist id="rl${i}">${inv.map(x=>`<option value="${x.name}" data-id="${x.id}" data-price="${x.price}">`).join('')}</datalist>
+        <datalist id="rl${i}">${RECEIPT.suggestionOptions(row.d)}</datalist>
       </td>
       <td style="padding:2px 3px;width:7%;border-bottom:1px solid var(--bdr)">${inp('text',row.c||'','0',"RECEIPT.update("+i+",'c',this.value)")}</td>
       <td style="padding:2px 3px;width:7%;border-bottom:1px solid var(--bdr)">${inp('text',row.z||'','0',"RECEIPT.update("+i+",'z',this.value)")}</td>
@@ -1239,6 +1288,7 @@ const RECEIPT = {
       <td style="padding:2px 3px;border-bottom:1px solid var(--bdr);text-align:center"><button class="btn bred bxs" onclick="RECEIPT.delRow(${i})">✕</button></td>
     </tr>`).join('');
     RECEIPT.calcGrand();
+    RECEIPT.applyRowStates();
   },
 
   // Called when user picks unit type (کارتۆن / دانە / دەرزەن)
@@ -1265,7 +1315,7 @@ _calcTotal(i){
     RECEIPT.rows[i].unit=unit;
     // Auto-fill price from inventory based on selected unit
     if(unit && RECEIPT.rows[i].inv_id){
-      const inv=POS.inv||API.getInventory()||[];
+      const inv=(POS.inv&&POS.inv.length?POS.inv:API.getInventory())||[];
       const item=inv.find(x=>x.id===RECEIPT.rows[i].inv_id);
       if(item){
         if(unit==='c') RECEIPT.rows[i].p=item.price_c||item.price||0;
@@ -1274,6 +1324,7 @@ _calcTotal(i){
       }
     }
     RECEIPT._calcTotal(i);
+    if(RECEIPT.isRowComplete(RECEIPT.rows[i])) RECEIPT.rows[i].done=true;
     // setUnit: must re-render to update price input value
     RECEIPT.renderRows();
     RECEIPT.calcGrand();
@@ -1288,19 +1339,16 @@ _patchRow(i){
     if(cells[i]){
       const totCell=cells[i].querySelector('td:nth-child(6)');
       if(totCell) totCell.textContent=row.t>0?fn(row.t):'';
-      // Update row background color based on filled status
-      const isFilled=row.d&&row.t>0;
-      const bg=isFilled?'#c8e6d0':'';
-      cells[i].style.background=bg;
-      cells[i].querySelectorAll('td').forEach(td=>td.style.background=bg);
+      RECEIPT.applyRowState(i);
     }
     RECEIPT.calcGrand();
   },
 
 update(i,f,v){
     RECEIPT.rows[i][f]=v;
-          const inv=POS.inv||API.getInventory()||[];
-      const item=inv.find(x=>x.name===v);
+      if(f==='d') RECEIPT.refreshSuggestions(i,v);
+          const inv=(POS.inv&&POS.inv.length?POS.inv:API.getInventory())||[];
+      const item=inv.find(x=>String(x.name||'').toLowerCase()===String(v||'').trim().toLowerCase());
       if(item){
         RECEIPT.rows[i].inv_id=item.id;
         RECEIPT.rows[i].p=item.price_c||item.price||0;
@@ -1318,7 +1366,7 @@ update(i,f,v){
       RECEIPT.calcGrand();
 
   },
-  addRow(){RECEIPT.rows.push({d:'',c:'',z:'',q:'',p:'',t:0,img:'',inv_id:'',unit:''});RECEIPT.renderRows();RECEIPT.updatePreview();},
+  addRow(){RECEIPT.rows.push(RECEIPT.blankRow());RECEIPT.renderRows();RECEIPT.updatePreview();},
   delRow(i){if(RECEIPT.rows.length>1){RECEIPT.rows.splice(i,1);RECEIPT.renderRows();RECEIPT.updatePreview();}},
 
   calcGrand(){
@@ -1354,7 +1402,7 @@ update(i,f,v){
   clear(){
     el('rc').value='';el('rph').value='';
     RECEIPT.rows=[];
-    for(let i=0;i<RECEIPT.TOTAL_ROWS;i++) RECEIPT.rows.push({d:'',c:'',z:'',q:'',p:'',t:0,img:'',inv_id:'',unit:''});
+    for(let i=0;i<RECEIPT.TOTAL_ROWS;i++) RECEIPT.rows.push(RECEIPT.blankRow());
     RECEIPT.renderRows();RECEIPT.updatePreview();
   },
 
@@ -1499,6 +1547,7 @@ ${allPagesHTML}
 <\/script>
 </body></html>`);
     win.document.close();
+    setTimeout(()=>RECEIPT.resetRowMarks(), 1200);
 
     // ── STEP 2: After short delay, also generate PDF download ────────
     toast('⏳ PDF ئامادەدەکرێت...', 'ok');
@@ -1610,17 +1659,17 @@ const INV = {
 
   openAdd(){
     INV.editingId=null;INV.imgData='';
-    el('ov-inv-t').textContent='زیادکردنی کاڵا';
+    el('inv-form-title').textContent='زیادکردنی کاڵا';
     ['ii-code','ii-name','ii-cat','ii-qty','ii-cost','ii-price-c','ii-price-z','ii-price-q'].forEach(id=>el(id).value='');
     el('ii-img-preview').style.display='none';
-    om('ov-inv');
+    const imgInput=el('ii-img');if(imgInput)imgInput.value='';
   },
 
   edit(id){
     INV.editingId=id;
     const inv=API.getInventory()||[];
     const item=inv.find(i=>i.id===id);if(!item)return;
-    el('ov-inv-t').textContent='دەستکاریکردنی کاڵا';
+    el('inv-form-title').textContent='دەستکاریکردنی کاڵا';
     el('ii-code').value=item.code;el('ii-name').value=item.name;
     el('ii-cat').value=item.cat;el('ii-qty').value=item.qty;
     el('ii-cost').value=item.cost;
@@ -1630,7 +1679,8 @@ const INV = {
     INV.imgData=item.img||'';
     if(item.img){el('ii-img-preview').src=item.img;el('ii-img-preview').style.display='block';}
     else el('ii-img-preview').style.display='none';
-    om('ov-inv');
+    el('inv-inline-form')?.scrollIntoView({behavior:'smooth',block:'start'});
+    setTimeout(()=>el('ii-name')?.focus(),150);
   },
 
   previewImg(input){
@@ -1658,10 +1708,13 @@ const INV = {
       img:INV.imgData||'',
     };
     try {
-      if(INV.editingId) API.updateItem(INV.editingId,data);
+      const wasEditing=!!INV.editingId;
+      if(wasEditing) API.updateItem(INV.editingId,data);
       else API.addItem(data);
-      cm('ov-inv');INV.load();
+      INV.openAdd();
+      INV.load();
       toast('کاڵا پاشەکەوت کرا ✅','ok');
+      if(!wasEditing) APP.go('receipt');
     } catch(e){ toast(e.message,'er'); }
   },
 
