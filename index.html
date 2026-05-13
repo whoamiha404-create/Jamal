@@ -393,27 +393,19 @@ tbody tr:hover td{background:var(--sur2)}
         </div>
         <div class="pnl ao" id="inv-inline-form">
           <div class="pnl-t" id="inv-form-title">زیادکردنی کاڵا</div>
-          <div style="display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px;align-items:end">
-            <div class="fg"><label>کۆد/بارکۆد</label><input id="ii-code" placeholder="G001"/></div>
+          <div style="display:grid;grid-template-columns:2fr repeat(3,1fr);gap:10px;align-items:end">
             <div class="fg"><label>ناوی کاڵا</label><input id="ii-name" placeholder="ناوی کاڵا..."/></div>
-            <div class="fg"><label>جۆر</label><input id="ii-cat" placeholder="مەتبەخ، شووشە..."/></div>
-            <div class="fg"><label>بڕ لە کۆگا</label><input id="ii-qty" type="number" min="0" placeholder="0"/></div>
-            <div class="fg"><label>نرخی کڕین (د.ع)</label><input id="ii-cost" type="number" min="0" placeholder="0"/></div>
+            <div class="fg"><label>نرخ بە دانە (د.ع)</label><input id="ii-price-q" type="number" min="0" placeholder="0"/></div>
+            <div class="fg"><label>نرخ بە دەرزەن (د.ع)</label><input id="ii-price-z" type="number" min="0" placeholder="0"/></div>
             <div class="fg"><label>نرخ بە کارتۆن (د.ع)</label><input id="ii-price-c" type="number" min="0" placeholder="0"/></div>
-            <div class="fg"><label>نرخ بە دانە (د.ع)</label><input id="ii-price-z" type="number" min="0" placeholder="0"/></div>
-            <div class="fg"><label>نرخ بە دەرزەن (د.ع)</label><input id="ii-price-q" type="number" min="0" placeholder="0"/></div>
-            <div class="fg" style="grid-column:span 2"><label>وێنەی کاڵا</label>
-              <input type="file" id="ii-img" accept="image/*" onchange="INV.previewImg(this)" style="font-size:12px"/>
-              <img id="ii-img-preview" style="max-width:80px;max-height:80px;border-radius:6px;margin-top:6px;display:none"/>
-            </div>
-            <div style="display:flex;gap:8px;justify-content:flex-end;grid-column:span 2">
+            <div style="display:flex;gap:8px;justify-content:flex-end;grid-column:1 / -1">
               <button class="btn bgh" onclick="INV.openAdd()">پاککردنەوە</button>
               <button class="btn bsolid" onclick="INV.save()">پاشەکەوتکردن</button>
             </div>
           </div>
         </div>
         <div class="sec">
-          <table><thead><tr><th>وێنە</th><th>کۆد</th><th>ناوی کاڵا</th><th>جۆر</th><th>بڕ</th><th>نرخی کڕین</th><th>نرخی فرۆشتن</th><th>دۆخ</th><th class="ao">کردارەکان</th></tr></thead>
+          <table><thead><tr><th>ناوی کاڵا</th><th>نرخ بە دانە</th><th>نرخ بە دەرزەن</th><th>نرخ بە کارتۆن</th><th class="ao">کردارەکان</th></tr></thead>
           <tbody id="inv-body"></tbody></table>
         </div>
       </div>
@@ -1259,6 +1251,20 @@ const RECEIPT = {
     if(dl) dl.innerHTML=RECEIPT.suggestionOptions(q);
   },
 
+  priceForUnit(item, unit){
+    if(unit==='c') return Number(item.price_c||item.price||0);
+    if(unit==='z') return Number(item.price_z||0);
+    if(unit==='q') return Number(item.price_q||0);
+    return Number(item.price_c||item.price_z||item.price_q||item.price||0);
+  },
+
+  defaultUnitForItem(item){
+    if(Number(item.price_c||0)>0) return 'c';
+    if(Number(item.price_z||0)>0) return 'z';
+    if(Number(item.price_q||0)>0) return 'q';
+    return 'z';
+  },
+
   renderRows(){
     const inp=(type,val,ph,onch,extra='')=>`<input type="${type}" value="${val}" placeholder="${ph}" oninput="${onch}" style="width:100%;text-align:center;background:var(--sur2);border:1px solid var(--bdr);border-radius:4px;padding:4px 3px;color:var(--ink);font-size:12px;font-family:inherit;outline:none;${extra}"/>`;
     el('r-rows').innerHTML=RECEIPT.rows.map((row,i)=>`<tr>
@@ -1318,9 +1324,7 @@ _calcTotal(i){
       const inv=(POS.inv&&POS.inv.length?POS.inv:API.getInventory())||[];
       const item=inv.find(x=>x.id===RECEIPT.rows[i].inv_id);
       if(item){
-        if(unit==='c') RECEIPT.rows[i].p=item.price_c||item.price||0;
-        if(unit==='z') RECEIPT.rows[i].p=item.price_z||0;
-        if(unit==='q') RECEIPT.rows[i].p=item.price_q||0;
+        RECEIPT.rows[i].p=RECEIPT.priceForUnit(item, unit);
       }
     }
     RECEIPT._calcTotal(i);
@@ -1351,9 +1355,14 @@ update(i,f,v){
       const item=inv.find(x=>String(x.name||'').toLowerCase()===String(v||'').trim().toLowerCase());
       if(item){
         RECEIPT.rows[i].inv_id=item.id;
-        RECEIPT.rows[i].p=item.price_c||item.price||0;
+        RECEIPT.rows[i].unit=RECEIPT.defaultUnitForItem(item);
+        RECEIPT.rows[i].p=RECEIPT.priceForUnit(item, RECEIPT.rows[i].unit);
         // Patch price input in DOM directly — NO full re-render
         const trs=document.querySelectorAll('#r-rows tr');
+        if(trs[i]){
+          const unitSelect=trs[i].querySelector('td:nth-child(5) select');
+          if(unitSelect) unitSelect.value=RECEIPT.rows[i].unit||'z';
+        }
         if(trs[i]){
           const pi=trs[i].querySelector('td:nth-child(5) input[type=number]');
           if(pi) pi.value=RECEIPT.rows[i].p||'';
@@ -1632,26 +1641,22 @@ const INV = {
   imgData: '',
 
   load(q=''){
-    el('inv-body').innerHTML='<tr><td colspan="9"><div class="spin">چاوەڕوان بە...</div></td></tr>';
+    el('inv-body').innerHTML='<tr><td colspan="5"><div class="spin">چاوەڕوان بە...</div></td></tr>';
     try {
       const inv=API.getInventory(q)||[];
       const isA=APP.user?.role==='admin';
       el('inv-body').innerHTML=inv.length
         ? inv.map(i=>`<tr>
-            <td>${i.img?`<img src="${i.img}" style="width:36px;height:36px;border-radius:5px;object-fit:cover;border:1px solid var(--bdr)"/>`:`<span style="font-size:20px">📦</span>`}</td>
-            <td><span class="bd bn" style="font-family:monospace;font-size:10px">${i.code}</span></td>
             <td style="font-weight:500">${i.name}</td>
-            <td><span class="bd bg">${i.cat}</span></td>
-            <td style="${i.qty<5?'color:var(--red);font-weight:700':''}">${i.qty}${i.qty<5?' ⚠️':''}</td>
-            <td style="color:var(--ink2)">${fn(i.cost)||'—'}</td>
-            <td style="color:var(--gold);font-weight:700">${fn(i.price)||'—'}</td>
-            <td><span class="bd ${i.qty>0?'bv':'br'}">${i.qty>0?'بەردەستە':'تەواوبوو'}</span></td>
+            <td style="color:var(--gold);font-weight:700">${fn(i.price_q)||'—'}</td>
+            <td style="color:var(--gold);font-weight:700">${fn(i.price_z)||'—'}</td>
+            <td style="color:var(--gold);font-weight:700">${fn(i.price_c||i.price)||'—'}</td>
             ${isA?`<td><div style="display:flex;gap:4px">
               <button class="btn bgh bxs" onclick="INV.edit('${i.id}')">✏️</button>
               <button class="btn bred bxs" onclick="INV.del('${i.id}')">🗑️</button>
             </div></td>`:`<td></td>`}
           </tr>`).join('')
-        : '<tr><td colspan="9"><div class="es">📦 هیچ کاڵایەک نییە</div></td></tr>';
+        : '<tr><td colspan="5"><div class="es">📦 هیچ کاڵایەک نییە</div></td></tr>';
     } catch(e){ toast('Error loading inventory','er'); }
   },
 
@@ -1660,9 +1665,7 @@ const INV = {
   openAdd(){
     INV.editingId=null;INV.imgData='';
     el('inv-form-title').textContent='زیادکردنی کاڵا';
-    ['ii-code','ii-name','ii-cat','ii-qty','ii-cost','ii-price-c','ii-price-z','ii-price-q'].forEach(id=>el(id).value='');
-    el('ii-img-preview').style.display='none';
-    const imgInput=el('ii-img');if(imgInput)imgInput.value='';
+    ['ii-name','ii-price-c','ii-price-z','ii-price-q'].forEach(id=>el(id).value='');
   },
 
   edit(id){
@@ -1670,15 +1673,10 @@ const INV = {
     const inv=API.getInventory()||[];
     const item=inv.find(i=>i.id===id);if(!item)return;
     el('inv-form-title').textContent='دەستکاریکردنی کاڵا';
-    el('ii-code').value=item.code;el('ii-name').value=item.name;
-    el('ii-cat').value=item.cat;el('ii-qty').value=item.qty;
-    el('ii-cost').value=item.cost;
+    el('ii-name').value=item.name;
     el('ii-price-c').value=item.price_c||item.price||0;
     el('ii-price-z').value=item.price_z||0;
     el('ii-price-q').value=item.price_q||0;
-    INV.imgData=item.img||'';
-    if(item.img){el('ii-img-preview').src=item.img;el('ii-img-preview').style.display='block';}
-    else el('ii-img-preview').style.display='none';
     el('inv-inline-form')?.scrollIntoView({behavior:'smooth',block:'start'});
     setTimeout(()=>el('ii-name')?.focus(),150);
   },
@@ -1697,15 +1695,16 @@ const INV = {
   save(){
     const name=el('ii-name').value.trim();
     if(!name){toast('ناوی کاڵا پڕ بکەرەوە','er');return;}
+    const priceC=parseFloat(el('ii-price-c').value)||0;
+    const priceZ=parseFloat(el('ii-price-z').value)||0;
+    const priceQ=parseFloat(el('ii-price-q').value)||0;
+    if(!priceC&&!priceZ&&!priceQ){toast('تکایە لانیکەم یەک نرخ بنووسە','er');return;}
     const data={
-      name,code:el('ii-code').value.trim(),cat:el('ii-cat').value.trim()||'گشتی',
-      qty:parseInt(el('ii-qty').value)||0,
-      cost:parseFloat(el('ii-cost').value)||0,
-      price:parseFloat(el('ii-price-c').value)||parseFloat(el('ii-price-q').value)||0,
-      price_c:parseFloat(el('ii-price-c').value)||0,
-      price_z:parseFloat(el('ii-price-z').value)||0,
-      price_q:parseFloat(el('ii-price-q').value)||0,
-      img:INV.imgData||'',
+      name,
+      price:priceC||priceZ||priceQ,
+      price_c:priceC,
+      price_z:priceZ,
+      price_q:priceQ,
     };
     try {
       const wasEditing=!!INV.editingId;
