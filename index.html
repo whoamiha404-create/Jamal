@@ -1350,29 +1350,39 @@ _patchRow(i){
 
 update(i,f,v){
     RECEIPT.rows[i][f]=v;
-      if(f==='d') RECEIPT.refreshSuggestions(i,v);
-          const inv=(POS.inv&&POS.inv.length?POS.inv:API.getInventory())||[];
+    const inv=(POS.inv&&POS.inv.length?POS.inv:API.getInventory())||[];
+    const trs=document.querySelectorAll('#r-rows tr');
+    if(f==='d'){
+      RECEIPT.refreshSuggestions(i,v);
       const item=inv.find(x=>String(x.name||'').toLowerCase()===String(v||'').trim().toLowerCase());
       if(item){
         RECEIPT.rows[i].inv_id=item.id;
-        RECEIPT.rows[i].unit=RECEIPT.defaultUnitForItem(item);
-        RECEIPT.rows[i].p=RECEIPT.priceForUnit(item, RECEIPT.rows[i].unit);
-        // Patch price input in DOM directly — NO full re-render
-        const trs=document.querySelectorAll('#r-rows tr');
-        if(trs[i]){
-          const unitSelect=trs[i].querySelector('td:nth-child(5) select');
-          if(unitSelect) unitSelect.value=RECEIPT.rows[i].unit||'z';
-        }
+        RECEIPT.rows[i].p='';
         if(trs[i]){
           const pi=trs[i].querySelector('td:nth-child(5) input[type=number]');
-          if(pi) pi.value=RECEIPT.rows[i].p||'';
+          if(pi) pi.value='';
         }
       } else {
         RECEIPT.rows[i].inv_id='';
+        RECEIPT.rows[i].p='';
       }
-      RECEIPT._calcTotal(i);
-      RECEIPT._patchRow(i);
-      RECEIPT.calcGrand();
+    }
+    if(['c','z','q'].includes(f) && RECEIPT.rows[i].inv_id && Number(v)>0){
+      const item=inv.find(x=>x.id===RECEIPT.rows[i].inv_id);
+      if(item){
+        RECEIPT.rows[i].unit=f;
+        RECEIPT.rows[i].p=RECEIPT.priceForUnit(item, f);
+        if(trs[i]){
+          const unitSelect=trs[i].querySelector('td:nth-child(5) select');
+          if(unitSelect) unitSelect.value=f;
+          const pi=trs[i].querySelector('td:nth-child(5) input[type=number]');
+          if(pi) pi.value=RECEIPT.rows[i].p||'';
+        }
+      }
+    }
+    RECEIPT._calcTotal(i);
+    RECEIPT._patchRow(i);
+    RECEIPT.calcGrand();
 
   },
   addRow(){RECEIPT.rows.push(RECEIPT.blankRow());RECEIPT.renderRows();RECEIPT.updatePreview();},
