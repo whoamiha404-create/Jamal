@@ -1252,10 +1252,10 @@ const RECEIPT = {
   },
 
   priceForUnit(item, unit){
-    if(unit==='c') return Number(item.price_c||item.price||0);
+    if(unit==='c') return Number(item.price_c||0);
     if(unit==='z') return Number(item.price_z||0);
     if(unit==='q') return Number(item.price_q||0);
-    return Number(item.price_c||item.price_z||item.price_q||item.price||0);
+    return Number(item.price_c||item.price_z||item.price_q||0);
   },
 
   defaultUnitForItem(item){
@@ -1660,7 +1660,7 @@ const INV = {
             <td style="font-weight:500">${i.name}</td>
             <td style="color:var(--gold);font-weight:700">${fn(i.price_q)||'—'}</td>
             <td style="color:var(--gold);font-weight:700">${fn(i.price_z)||'—'}</td>
-            <td style="color:var(--gold);font-weight:700">${fn(i.price_c||i.price)||'—'}</td>
+            <td style="color:var(--gold);font-weight:700">${fn(i.price_c)||'—'}</td>
             ${isA?`<td><div style="display:flex;gap:4px">
               <button class="btn bgh bxs" onclick="INV.edit('${i.id}')">✏️</button>
               <button class="btn bred bxs" onclick="INV.del('${i.id}')">🗑️</button>
@@ -1684,7 +1684,7 @@ const INV = {
     const item=inv.find(i=>i.id===id);if(!item)return;
     el('inv-form-title').textContent='دەستکاریکردنی کاڵا';
     el('ii-name').value=item.name;
-    el('ii-price-c').value=item.price_c||item.price||0;
+    el('ii-price-c').value=item.price_c||0;
     el('ii-price-z').value=item.price_z||0;
     el('ii-price-q').value=item.price_q||0;
     el('inv-inline-form')?.scrollIntoView({behavior:'smooth',block:'start'});
@@ -1711,7 +1711,7 @@ const INV = {
     if(!priceC&&!priceZ&&!priceQ){toast('تکایە لانیکەم یەک نرخ بنووسە','er');return;}
     const data={
       name,
-      price:priceC||priceZ||priceQ,
+      price:priceC,
       price_c:priceC,
       price_z:priceZ,
       price_q:priceQ,
